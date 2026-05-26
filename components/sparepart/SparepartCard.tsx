@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { formatRupiah } from "@/lib/utils"
 import { KeaslianBadge } from "./KeaslianBadge"

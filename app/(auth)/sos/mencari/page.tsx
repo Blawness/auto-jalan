@@ -1,20 +1,23 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Loader2, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { useUiStore } from "@/stores/uiStore"
 
 export default function SOSMencariPage() {
   const router = useRouter()
-  const setSOSStatus = useUiStore((s) => s.setSOSStatus)
-  const initSOSTracking = useUiStore((s) => s.initSOSTracking)
+  const queuedRef = useRef(false)
 
   useEffect(() => {
-    setSOSStatus("mencari")
+    if (queuedRef.current) return
+    queuedRef.current = true
+
+    useUiStore.getState().setSOSStatus("mencari")
+
     const timer = setTimeout(() => {
-      initSOSTracking({
+      useUiStore.getState().initSOSTracking({
         mechId: "m1",
         mechName: "Budi Santoso",
         mechFoto: "/images/mekaniks/m1.jpg",
@@ -23,8 +26,9 @@ export default function SOSMencariPage() {
       })
       router.push("/sos/tracking")
     }, 3000)
+
     return () => clearTimeout(timer)
-  }, [router, setSOSStatus, initSOSTracking])
+  }, [router])
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center p-4">
@@ -36,9 +40,8 @@ export default function SOSMencariPage() {
         <Search className="h-16 w-16 text-red-500" />
       </motion.div>
       <h2 className="mb-2 text-xl font-bold">Sedang mencari montir terdekat...</h2>
-      <p className="mb-6 text-sm text-gray-500">Mohon tunggu sebentar</p>
-      <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-      <div className="mt-8 flex gap-1">
+      <p className="mb-8 text-sm text-gray-500">Mohon tunggu sebentar</p>
+      <div className="flex gap-1">
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}

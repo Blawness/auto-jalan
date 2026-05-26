@@ -3,6 +3,7 @@ import { bengkels, mekaniks } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
+import { SafeImage } from "@/components/ui/safe-image"
 import { Star, MapPin, Clock } from "lucide-react"
 import { MekanikCard } from "@/components/mekanik/MekanikCard"
 
@@ -20,7 +21,7 @@ export default async function BengkelDetailPage({ params }: Props) {
       <TopBar title="Profil Bengkel" />
       <div className="space-y-4 p-4">
         <div className="rounded-xl border bg-white p-5">
-          <img src={bengkel.foto} alt={bengkel.nama} className="h-40 w-full rounded-lg object-cover" onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/400x200/e2e8f0/64748b?text=..." }} />
+          <SafeImage src={bengkel.foto} alt={bengkel.nama} className="h-40 w-full rounded-lg object-cover" fallback="https://placehold.co/400x200/e2e8f0/64748b?text=..." />
           <h2 className="mt-3 text-lg font-bold">{bengkel.nama}</h2>
           <div className="mt-1 flex items-center gap-2 text-sm text-gray-500"><Star className="h-4 w-4 fill-yellow-400 text-yellow-400" /><span>{bengkel.rating}</span></div>
           <div className="mt-1 flex items-center gap-2 text-sm text-gray-500"><MapPin className="h-4 w-4" /><span>{bengkel.alamat}</span></div>

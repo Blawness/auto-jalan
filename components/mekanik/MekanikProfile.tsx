@@ -1,3 +1,5 @@
+"use client"
+
 import { Star, MapPin, Award, Car } from "lucide-react"
 
 type Props = {

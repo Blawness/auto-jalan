@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useMemo } from "react"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
@@ -9,6 +9,26 @@ const defaultIcon = L.icon({
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+})
+
+const userIcon = L.icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+})
+
+const mechIcon = L.icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
   shadowUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
   iconSize: [25, 41],
@@ -42,101 +62,72 @@ export function TrackingMap({
   mechMarker,
   height = "h-[calc(100vh-10rem)]",
 }: Props) {
-  const mapRef = useRef<L.Map | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const markersRef = useRef<Map<string, L.Marker>>(new Map())
+  const mapRef = useRef<L.Map | null>(null)
+  const markerLayerRef = useRef<L.LayerGroup | null>(null)
   const userMarkerRef = useRef<L.Marker | null>(null)
   const mechMarkerRef = useRef<L.Marker | null>(null)
+  const onMarkerClickRef = useRef(onMarkerClick)
+  onMarkerClickRef.current = onMarkerClick
+
+  const centerKey = useMemo(() => `${center[0]},${center[1]}`, [center])
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return
+    if (!containerRef.current) return
+
     const map = L.map(containerRef.current).setView(center, 13)
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map)
     mapRef.current = map
+
+    const layerGroup = L.layerGroup().addTo(map)
+    markerLayerRef.current = layerGroup
+
     return () => {
       map.remove()
       mapRef.current = null
+      markerLayerRef.current = null
     }
-  }, [center])
+  }, [centerKey])
 
   useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
-    const existing = markersRef.current
-    const newIds = new Set(markers.map((m) => m.id))
-    existing.forEach((marker, id) => {
-      if (!newIds.has(id)) {
-        marker.remove()
-        existing.delete(id)
-      }
-    })
+    const layerGroup = markerLayerRef.current
+    if (!layerGroup) return
+
+    layerGroup.clearLayers()
+
     markers.forEach((m) => {
-      if (existing.has(m.id)) {
-        existing.get(m.id)!.setLatLng([m.lat, m.lng])
-      } else {
-        const marker = L.marker([m.lat, m.lng], { icon: defaultIcon })
-          .addTo(map)
-          .bindPopup(
-            `<div class="p-1">` +
-              `<p class="font-semibold text-sm">${m.label}</p>` +
-              (m.rating ? `<p class="text-xs">Star ${m.rating}</p>` : "") +
-              (m.jamBuka ? `<p class="text-xs text-gray-500">${m.jamBuka}</p>` : "") +
-              `<button onclick="window.__bengkelClick&&window.__bengkelClick('${m.id}')" class="mt-1 text-xs text-blue-600 hover:underline">Lihat Detail</button>` +
+      const marker = L.marker([m.lat, m.lng], { icon: defaultIcon })
+        .bindPopup(
+          `<div style="min-width:140px">` +
+            `<p style="font-weight:600;font-size:13px;margin:0 0 4px">${m.label}</p>` +
+            (m.rating ? `<p style="font-size:12px;margin:0 0 4px">&#11088; ${m.rating}</p>` : "") +
+            (m.jamBuka ? `<p style="font-size:11px;color:#666;margin:0 0 6px">${m.jamBuka}</p>` : "") +
+            `<a href="/bengkel/${m.id}" style="font-size:12px;color:#2563eb;text-decoration:underline">Lihat Detail</a>` +
             `</div>`
-          )
-        marker.on("popupopen", () => {
-          if (onMarkerClick) {
-            ;(window as any).__bengkelClick = (id: string) => onMarkerClick(id)
-          }
-        })
-        existing.set(m.id, marker)
-      }
+        )
+      layerGroup.addLayer(marker)
     })
-  }, [markers, onMarkerClick])
+  }, [markers])
 
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
+
     if (userMarker) {
       if (!userMarkerRef.current) {
-        userMarkerRef.current = L.marker(
-          [userMarker.lat, userMarker.lng],
-          {
-            icon: L.icon({
-              iconUrl:
-                "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-              shadowUrl:
-                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            }),
-          }
-        )
+        userMarkerRef.current = L.marker([userMarker.lat, userMarker.lng], { icon: userIcon })
           .addTo(map)
           .bindPopup(userMarker.label)
       } else {
         userMarkerRef.current.setLatLng([userMarker.lat, userMarker.lng])
       }
     }
+
     if (mechMarker) {
       if (!mechMarkerRef.current) {
-        mechMarkerRef.current = L.marker(
-          [mechMarker.lat, mechMarker.lng],
-          {
-            icon: L.icon({
-              iconUrl:
-                "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-              shadowUrl:
-                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            }),
-          }
-        )
+        mechMarkerRef.current = L.marker([mechMarker.lat, mechMarker.lng], { icon: mechIcon })
           .addTo(map)
           .bindPopup(mechMarker.label)
       } else {

@@ -15,8 +15,10 @@ export function useSimulateTracking() {
   useEffect(() => {
     if (sosState.status !== "tracking") return
 
-    let mechLat = sosState.mechLat
-    let mechLng = sosState.mechLng
+    const startLat = sosState.mechLat
+    const startLng = sosState.mechLng
+    let mechLat = startLat
+    let mechLng = startLng
     let eta = sosState.eta
 
     intervalRef.current = setInterval(() => {
@@ -24,22 +26,28 @@ export function useSimulateTracking() {
       const dLng = USER_LNG - mechLng
       const distance = Math.sqrt(dLat * dLat + dLng * dLng)
 
-      if (distance < 0.001) {
+      if (distance < 0.0005) {
         setSOSStatus("arrived")
-        if (intervalRef.current) clearInterval(intervalRef.current)
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
         return
       }
 
-      const step = 0.003
+      const step = 0.002
       mechLat += (dLat / distance) * step
       mechLng += (dLng / distance) * step
-      eta = Math.max(0, eta - 0.1)
+      eta = Math.max(0, eta - 0.2)
 
-      updateSOSPosition(mechLat, mechLng, Math.ceil(eta))
-    }, 2000)
+      updateSOSPosition(mechLat, mechLng, Math.round(eta))
+    }, 1000)
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
     }
   }, [sosState.status])
 
