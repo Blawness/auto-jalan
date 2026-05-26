@@ -1,0 +1,27 @@
+import "dotenv/config"
+import { db } from "../db"
+import { vehicles, spareparts, mekaniks, bengkels, services } from "../schema"
+import { seedVehicles } from "./vehicles"
+import { seedSpareparts } from "./spareparts"
+import { seedMekaniks } from "./mekaniks"
+import { seedBengkels } from "./bengkels"
+import { seedServices } from "./services"
+
+async function seed() {
+  console.log("Seeding database...")
+  await db.insert(vehicles).values(seedVehicles).onConflictDoNothing()
+  await db.insert(services).values(seedServices).onConflictDoNothing()
+  for (const b of seedBengkels) {
+    await db.insert(bengkels).values(b).onConflictDoNothing()
+  }
+  for (const m of seedMekaniks) {
+    await db.insert(mekaniks).values(m).onConflictDoNothing()
+  }
+  for (const s of seedSpareparts) {
+    await db.insert(spareparts).values(s).onConflictDoNothing()
+  }
+  console.log("Seed complete!")
+  process.exit(0)
+}
+
+seed().catch((e) => { console.error(e); process.exit(1) })
