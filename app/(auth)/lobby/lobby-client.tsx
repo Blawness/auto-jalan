@@ -14,6 +14,8 @@ import {
   TriangleAlert,
   ShoppingBag,
   MessageSquare,
+  LogIn,
+  UserPlus,
 } from "lucide-react"
 import { formatRupiah } from "@/lib/utils"
 
@@ -46,6 +48,7 @@ interface SparepartRow {
 }
 
 interface Props {
+  isGuest?: boolean
   userName: string
   initial: string
   brands: string[]
@@ -59,7 +62,7 @@ const layananGrid = [
   { href: "/forum", label: "Forum Komunitas", icon: MessageSquare, color: "bg-orange-50 text-orange-600" },
 ]
 
-export function LobbyClient({ userName, initial, brands, spareparts }: Props) {
+export function LobbyClient({ isGuest = false, userName, initial, brands, spareparts }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-[#f4f6f9]">
       <div className="sticky top-0 z-40 bg-white">
@@ -71,22 +74,53 @@ export function LobbyClient({ userName, initial, brands, spareparts }: Props) {
               <div className="text-[13px] font-bold leading-[1.4] text-blue-600">Jakarta Selatan</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-gray-100">
-              <Bell className="h-4 w-4 text-gray-700" />
+          {isGuest ? (
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-1 rounded-full bg-blue-600 px-4 py-[6px] text-xs font-semibold text-white"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              Masuk
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-gray-100">
+                <Bell className="h-4 w-4 text-gray-700" />
+              </div>
+              <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-blue-600 text-[13px] font-bold text-white">
+                {initial}
+              </div>
             </div>
-            <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-blue-600 text-[13px] font-bold text-white">
-              {initial}
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto" style={{ maxHeight: "calc(100vh - 62px)" }}>
         <div className="px-4 pb-0 pt-[14px]">
-          <p className="text-xs text-gray-400">Selamat datang kembali,</p>
+          <p className="text-xs text-gray-400">
+            {isGuest ? "Jelajahi layanan Auto Jalan" : "Selamat datang kembali,"}
+          </p>
           <h2 className="mt-[2px] text-[20px] font-bold text-gray-900">{userName}</h2>
         </div>
+
+        {isGuest && (
+          <div className="mx-4 mt-3 flex gap-2">
+            <Link
+              href="/register"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-blue-600 py-[10px] text-xs font-bold text-white"
+            >
+              <UserPlus className="h-4 w-4" />
+              Daftar Gratis
+            </Link>
+            <Link
+              href="/login"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-blue-600 bg-white py-[10px] text-xs font-bold text-blue-600"
+            >
+              <LogIn className="h-4 w-4" />
+              Masuk Akun
+            </Link>
+          </div>
+        )}
 
         <div className="mx-4 mt-3 flex items-center gap-[10px] rounded-[14px] border border-gray-200 bg-white px-[14px] py-[10px]">
           <Search className="h-4 w-4 flex-shrink-0 text-gray-400" />
@@ -184,7 +218,7 @@ export function LobbyClient({ userName, initial, brands, spareparts }: Props) {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-[10px] rounded-[14px] border border-gray-200 bg-white p-[14px_12px]`}
+              className="flex items-center gap-[10px] rounded-[14px] border border-gray-200 bg-white p-[14px_12px]"
             >
               <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
                 <Icon className="h-5 w-5" />

@@ -4,6 +4,21 @@ import type { NextRequest } from "next/server"
 
 const publicRoutes = ["/", "/login", "/register"]
 
+const browseRoutes = [
+  "/lobby",
+  "/sparepart",
+  "/montir",
+  "/bengkel",
+  "/forum",
+]
+
+function isBrowseRoute(pathname: string): boolean {
+  if (pathname.startsWith("/forum/ajukan")) return false
+  return browseRoutes.some(
+    (r) => pathname === r || pathname.startsWith(r + "/")
+  )
+}
+
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   const token = await getToken({ req, secret: process.env.AUTH_SECRET })
@@ -16,8 +31,16 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
+  if (isBrowseRoute(pathname)) {
+    return NextResponse.next()
+  }
+
   if (!isLoggedIn && !pathname.startsWith("/api")) {
-    return NextResponse.redirect(new URL("/login", req.url))
+    const loginUrl = new URL("/login", req.url)
+    if (pathname !== "/" && pathname !== "/login") {
+      loginUrl.searchParams.set("callbackUrl", pathname)
+    }
+    return NextResponse.redirect(loginUrl)
   }
 
   return NextResponse.next()

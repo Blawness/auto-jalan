@@ -30,14 +30,16 @@ async function getPopularSpareparts() {
 
 export default async function LobbyPage() {
   const session = await auth()
-  const userName = session?.user?.name ?? "User"
-  const initial = (session?.user?.name ?? "U")[0].toUpperCase()
+  const isGuest = !session?.user
+  const userName = session?.user?.name ?? "Tamu"
+  const initial = isGuest ? "?" : (session!.user!.name![0] ?? "U").toUpperCase()
 
   const brands = await getBrands()
   const popularSpareparts = await getPopularSpareparts()
 
   return (
     <LobbyClient
+      isGuest={isGuest}
       userName={userName}
       initial={initial}
       brands={brands}
