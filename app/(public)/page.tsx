@@ -74,6 +74,12 @@ export default function OnboardingPage() {
             <Button variant="outline" asChild className="w-full">
               <Link href="/login">Masuk</Link>
             </Button>
+            <Link
+              href="/lobby"
+              className="mt-2 text-center text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              Lanjut sebagai Tamu
+            </Link>
           </>
         )}
       </div>
