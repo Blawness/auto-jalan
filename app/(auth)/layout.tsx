@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 import { BottomNavbar } from "@/components/layout/BottomNavbar"
-import { SOSFab } from "@/components/layout/SOSFab"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 
@@ -9,10 +8,9 @@ async function AuthLayoutInner({ children }: { children: React.ReactNode }) {
   if (!session?.user) redirect("/login")
 
   return (
-    <div className="mx-auto min-h-screen max-w-md bg-gray-50 pb-16">
+    <div className="mx-auto min-h-screen max-w-md bg-gray-50 pb-[62px]">
       {children}
       <BottomNavbar />
-      <SOSFab />
     </div>
   )
 }

@@ -5,30 +5,9 @@ const BASE = "http://localhost:3000"
 // Pre-create a test user — register once and reuse
 let testCredentials = { email: "", password: "password123", name: "" }
 
-test.describe("Auto Jalan - Full Functional Test Suite", () => {
+// ---- ONBOARDING (no auth needed) ----
 
-  test.beforeAll(async ({ browser }) => {
-    const ts = Date.now()
-    testCredentials = {
-      email: `playwright${ts}@test.com`,
-      password: "password123",
-      name: `Bot ${ts}`,
-    }
-    const page = await browser.newPage()
-    await page.goto(`${BASE}/register`)
-    await page.fill('input[placeholder="Nama lengkap"]', testCredentials.name)
-    await page.fill('input[placeholder="email@example.com"]', testCredentials.email)
-    await page.fill('input[placeholder="0812xxxxxxxx"]', "081234567890")
-    await page.fill('input[placeholder="Minimal 8 karakter"]', testCredentials.password)
-    await page.fill('input[placeholder="Masukkan ulang password"]', testCredentials.password)
-    await page.getByRole("button", { name: "Daftar" }).click()
-    await page.waitForURL(/\/lobby/, { timeout: 15000 })
-    await page.close()
-  })
-
-  // ---- AUTH FLOWS ----
-
-  test("Onboarding page loads with 3 slides", async ({ page }) => {
+test("Onboarding page loads with 3 slides", async ({ page }) => {
     await page.goto(BASE)
     await expect(page.getByText("Montir Datang ke Lokasi")).toBeVisible()
     await page.getByText("Selanjutnya").click()
@@ -86,14 +65,14 @@ test.describe("Auto Jalan - Full Functional Test Suite", () => {
     await expect(page.getByRole("link", { name: "Cari Sparepart" })).toBeVisible()
     await expect(page.getByRole("link", { name: "Panggil Montir" })).toBeVisible()
     await expect(page.getByRole("link", { name: "Cari Bengkel" })).toBeVisible()
-    await expect(page.getByRole("link", { name: "SOS" })).toBeVisible()
-    await expect(page.getByRole("link", { name: "Forum" })).toBeVisible()
-    await expect(page.getByRole("link", { name: "About Us" })).toBeVisible()
+    await expect(page.getByRole("link", { name: "Forum Komunitas" })).toBeVisible()
+    await expect(page.getByText("Brand Kendaraan")).toBeVisible()
+    await expect(page.getByText("Sparepart Populer")).toBeVisible()
   })
 
   test("About page loads", async ({ page }) => {
     await loginHelper(page)
-    await page.getByRole("link", { name: "About Us" }).click()
+    await page.goto(`${BASE}/about`)
     await expect(page.getByText("Fitur Utama")).toBeVisible()
     await expect(page.getByText("Vorca Studio")).toBeVisible()
   })
@@ -324,13 +303,13 @@ test.describe("Auto Jalan - Full Functional Test Suite", () => {
 
   // ---- SOS FAB ----
 
-  test("SOS FAB navigates to SOS page", async ({ page }) => {
+  test("SOS via bottom navbar works", async ({ page }) => {
     await loginHelper(page)
     await page.goto(`${BASE}/lobby`)
     await page.waitForLoadState("networkidle")
     await page.waitForTimeout(500)
-    const sosFab = page.locator('a[href="/sos"].animate-pulse')
-    await sosFab.click()
+    const sosBtn = page.locator('a[href="/sos"].rounded-full')
+    await sosBtn.click()
     await expect(page).toHaveURL(/\/sos/)
   })
 
@@ -344,7 +323,6 @@ test.describe("Auto Jalan - Full Functional Test Suite", () => {
     await page.waitForURL(/\/login/, { timeout: 15000 })
     await expect(page.getByText("Masuk ke akun")).toBeVisible()
   })
-})
 
 async function loginHelper(page: any) {
   await page.goto(`${BASE}/login`)
