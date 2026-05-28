@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import {
   Search,
@@ -17,6 +18,7 @@ import {
   LogIn,
   UserPlus,
 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { formatRupiah } from "@/lib/utils"
 
 const brandIcons: Record<string, React.ElementType> = {
@@ -62,6 +64,103 @@ const layananGrid = [
   { href: "/forum", label: "Forum Komunitas", icon: MessageSquare, color: "bg-orange-50 text-orange-600" },
 ]
 
+const banners = [
+  {
+    bg: "bg-blue-600",
+    badge: "Promo Hari Ini",
+    title: "Servis Cepat,\nHarga Pasti",
+    href: "/montir",
+    cta: "Pesan Sekarang",
+    Icon: Car,
+  },
+  {
+    bg: "bg-green-600",
+    badge: "Sparepart",
+    title: "Original & Bergaransi,\nHarga Bersaing",
+    href: "/sparepart",
+    cta: "Cari Sparepart",
+    Icon: ShoppingBag,
+  },
+  {
+    bg: "bg-purple-600",
+    badge: "Montir 24 Jam",
+    title: "Darurat di Jalan?\nMontir Siap Bantu",
+    href: "/sos",
+    cta: "Panggil Sekarang",
+    Icon: Wrench,
+  },
+]
+
+function BannerSlider() {
+  const [current, setCurrent] = useState(0)
+  const [direction, setDirection] = useState(0)
+
+  const next = useCallback(() => {
+    setDirection(1)
+    setCurrent((p) => (p + 1) % banners.length)
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(next, 4000)
+    return () => clearInterval(id)
+  }, [next])
+
+  const variants = {
+    enter: (d: number) => ({ x: d > 0 ? 320 : -320, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (d: number) => ({ x: d > 0 ? -320 : 320, opacity: 0 }),
+  }
+
+  const { bg, badge, title, href, cta, Icon: BannerIcon } = banners[current]
+
+  return (
+    <div className="mx-4 mt-[14px] overflow-hidden rounded-[18px]">
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={current}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          className={`flex items-center justify-between ${bg} p-[18px]`}
+        >
+          <div className="flex-1">
+            <span className="inline-block rounded-[20px] bg-white/20 px-[10px] py-[3px] text-[10px] font-semibold text-white">
+              {badge}
+            </span>
+            <div className="mt-2 whitespace-pre-line text-[16px] font-bold leading-[1.3] text-white">
+              {title}
+            </div>
+            <Link
+              href={href}
+              className="mt-3 inline-flex items-center gap-[5px] rounded-[10px] bg-white px-[14px] py-2 text-[11px] font-bold text-blue-600"
+            >
+              {cta}
+              <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="flex flex-shrink-0 items-center justify-center opacity-20">
+            <BannerIcon className="h-20 w-20 text-white" />
+          </div>
+        </motion.div>
+      </AnimatePresence>
+      <div className="mt-2 flex justify-center gap-1.5 pb-1">
+        {banners.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i) }}
+            className={`h-[6px] rounded-full transition-all ${
+              i === current ? "w-[18px] bg-blue-600" : "w-[6px] bg-gray-300"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function LobbyClient({ isGuest = false, userName, initial, brands, spareparts }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-[#f4f6f9]">
@@ -95,7 +194,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ maxHeight: "calc(100vh - 62px)" }}>
+      <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ maxHeight: "calc(100vh - 62px)" }}>
         <div className="px-4 pb-0 pt-[14px]">
           <p className="text-xs text-gray-400">
             {isGuest ? "Jelajahi layanan Auto Jalan" : "Selamat datang kembali,"}
@@ -130,25 +229,24 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
           </div>
         </div>
 
-        <div className="mx-4 mt-[14px] flex items-center justify-between overflow-hidden rounded-[18px] bg-blue-600 p-[18px]">
-          <div className="flex-1">
-            <span className="inline-block rounded-[20px] bg-white/20 px-[10px] py-[3px] text-[10px] font-semibold text-white">
-              Promo Hari Ini
-            </span>
-            <div className="mt-2 text-[16px] font-bold leading-[1.3] text-white">
-              Servis Cepat,<br />Harga Pasti
-            </div>
+        <BannerSlider />
+
+        <div className="flex items-center justify-between px-4 pb-[10px] pt-4">
+          <span className="text-[14px] font-bold text-gray-900">Layanan</span>
+        </div>
+        <div className="mx-4 grid grid-cols-2 gap-[10px]">
+          {layananGrid.map(({ href, label, icon: Icon, color }) => (
             <Link
-              href="/montir"
-              className="mt-3 inline-flex items-center gap-[5px] rounded-[10px] bg-white px-[14px] py-2 text-[11px] font-bold text-blue-600"
+              key={href}
+              href={href}
+              className="flex items-center gap-[10px] rounded-[14px] border border-gray-200 bg-white p-[14px_12px]"
             >
-              Pesan Sekarang
-              <ChevronRight className="h-3 w-3" />
+              <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <span className="text-xs font-bold leading-[1.3] text-gray-900">{label}</span>
             </Link>
-          </div>
-          <div className="flex flex-shrink-0 items-center justify-center opacity-20">
-            <Car className="h-20 w-20 text-white" />
-          </div>
+          ))}
         </div>
 
         <div className="flex items-center justify-between px-4 pb-[10px] pt-4">
@@ -157,7 +255,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
             Lihat semua
           </Link>
         </div>
-        <div className="flex gap-[10px] overflow-x-auto px-4 pb-1">
+        <div className="flex gap-[10px] overflow-x-auto scrollbar-hide px-4 pb-1">
           {brands.slice(0, 8).map((brand) => {
             const IconComponent = brandIcons[brand] || Car
             const isActive = brand === "Honda"
@@ -190,7 +288,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
             Lihat semua
           </Link>
         </div>
-        <div className="flex gap-3 overflow-x-auto px-4 pb-1">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide px-4 pb-1">
           {spareparts.map((sp) => (
             <Link
               key={sp.id}
@@ -206,24 +304,6 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
               </div>
               <div className="mt-[3px] text-xs font-bold leading-[1.3] text-gray-900">{sp.nama}</div>
               <div className="mt-[3px] text-xs font-bold text-blue-600">{formatRupiah(sp.harga)}</div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center justify-between px-4 pb-[10px] pt-4">
-          <span className="text-[14px] font-bold text-gray-900">Layanan</span>
-        </div>
-        <div className="mx-4 grid grid-cols-2 gap-[10px]">
-          {layananGrid.map(({ href, label, icon: Icon, color }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-[10px] rounded-[14px] border border-gray-200 bg-white p-[14px_12px]"
-            >
-              <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <span className="text-xs font-bold leading-[1.3] text-gray-900">{label}</span>
             </Link>
           ))}
         </div>
