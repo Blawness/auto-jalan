@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,6 @@ import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
 export function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/lobby"
   const [loading, setLoading] = useState(false)
@@ -37,7 +36,7 @@ export function LoginForm() {
       toast.error("Email atau password salah")
       setLoading(false)
     } else {
-      router.push(callbackUrl)
+      window.location.href = callbackUrl
     }
   }
 
