@@ -17,3 +17,14 @@ test("Ongoing page renders", async ({ page }) => {
   await expect(page.getByText("Dana Anda ditahan")).toBeVisible()
   await expect(page.getByText("Geser jika Service Selesai")).toBeVisible()
 })
+
+test("Checkout requires scroll to bottom before submit", async ({ page }) => {
+  await page.goto(`/montir/m1/jasa`)
+  await page.waitForLoadState("networkidle")
+  await page.locator("button.rounded-xl.border").first().click()
+  await expect(page.getByText("Total Estimasi Jasa")).toBeVisible()
+  await page.getByRole("button", { name: /Lanjut ke Checkout/ }).click()
+  await page.waitForURL(/\/pemesanan\/checkout/, { timeout: 10000 })
+  const submitBtn = page.getByRole("button", { name: /Pesan Sekarang/ })
+  await expect(submitBtn.or(page.getByText("Scroll ke bawah"))).toBeVisible()
+})

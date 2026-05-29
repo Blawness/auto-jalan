@@ -43,7 +43,12 @@ export function SparepartFilter({ brands }: { brands: string[] }) {
                 onClick={() => router.push(`/sparepart/list?merek=${encodeURIComponent(brand)}`)}
                 className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-[7px] text-xs font-semibold text-gray-700 transition-colors hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:scale-95"
               >
-                {BrandIcon && <BrandIcon size={16} />}
+                {BrandIcon
+                  ? <BrandIcon size={16} />
+                  : <span className="text-[10px] font-bold text-gray-500 leading-none">
+                      {brand.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
+                    </span>
+                }
                 {brand}
               </button>
             )

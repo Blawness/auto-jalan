@@ -47,3 +47,11 @@ test("Add sparepart to cart", async ({ page }) => {
   await addBtn.click()
   await expect(page.getByText("Ditambahkan ke keranjang")).toBeVisible({ timeout: 5000 })
 })
+
+test("Sparepart search shows empty state for gibberish", async ({ page }) => {
+  await page.goto(`/sparepart`)
+  await page.fill('input[placeholder="Cari nama sparepart atau model..."]', "XYZZZZZZ")
+  await page.getByRole("button", { name: "Cari" }).click()
+  await page.waitForURL(/\/sparepart\/list/)
+  await expect(page.getByText("Tidak ada").or(page.getByText("ditemukan"))).toBeVisible()
+})

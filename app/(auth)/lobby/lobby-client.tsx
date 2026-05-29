@@ -270,10 +270,12 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
                 href={`/sparepart/list?merek=${encodeURIComponent(brand)}`}
                 className="flex flex-shrink-0 cursor-pointer flex-col items-center gap-[6px]"
               >
-                <div className="flex h-[50px] w-[50px] items-center justify-center rounded-full border-[1.5px] border-gray-200 bg-white">
+                <div className="flex h-[56px] w-[56px] items-center justify-center rounded-full border-[1.5px] border-gray-200 bg-white overflow-hidden">
                   {BrandIcon
-                    ? <BrandIcon size={28} />
-                    : <Car className="h-5 w-5 text-gray-400" />
+                    ? <BrandIcon size={80} />
+                    : <span className="text-[15px] font-bold text-gray-500 leading-none">
+                        {brand.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                      </span>
                   }
                 </div>
                 <span className="text-[11px] font-medium text-gray-500">{brand}</span>

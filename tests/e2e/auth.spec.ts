@@ -52,6 +52,25 @@ test.describe("guest", () => {
     await page.waitForURL(/\/login/, { timeout: 10000 })
   })
 
+  test("Register shows error on password mismatch", async ({ page }) => {
+    await page.goto(`/register`)
+    await page.fill('input[placeholder="Nama lengkap"]', "Mismatch User")
+    await page.fill('input[placeholder="email@example.com"]', `mismatch${Date.now()}@test.com`)
+    await page.fill('input[placeholder="0812xxxxxxxx"]', "081234567890")
+    await page.fill('input[placeholder="Minimal 8 karakter"]', "password123")
+    await page.fill('input[placeholder="Masukkan ulang password"]', "different456")
+    await page.getByRole("button", { name: "Daftar" }).click()
+    await expect(page.getByText("tidak cocok")).toBeVisible({ timeout: 5000 })
+  })
+
+  test("Login shows error on wrong credentials", async ({ page }) => {
+    await page.goto(`/login`)
+    await page.fill('input[placeholder="email@example.com"]', "nonexistent@test.com")
+    await page.fill('input[placeholder="Password Anda"]', "wrongpassword")
+    await page.getByRole("button", { name: "Masuk" }).click()
+    await expect(page.getByText("Email atau password salah")).toBeVisible({ timeout: 8000 })
+  })
+
   test("Unauthenticated access to /lobby is allowed (guest browse)", async ({ page }) => {
     await page.goto(`/lobby`)
     await expect(page).toHaveURL(/\/lobby/)
