@@ -1,4 +1,7 @@
+import path from "path"
 import { test, expect, type Page } from "@playwright/test"
+
+const authFile = path.join(__dirname, "../../playwright/.auth/user.json")
 
 test.describe("guest", () => {
   test.use({ storageState: undefined })
@@ -57,6 +60,7 @@ test.describe("guest", () => {
 })
 
 test.describe("authenticated", () => {
+  test.use({ storageState: authFile })
   test("Logout redirects to login", async ({ page }) => {
     await page.goto(`/akun`)
     await page.waitForLoadState("networkidle")

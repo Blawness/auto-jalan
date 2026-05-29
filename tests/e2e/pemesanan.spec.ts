@@ -1,4 +1,8 @@
+import path from "path"
 import { test, expect, type Page } from "@playwright/test"
+
+const authFile = path.join(__dirname, "../../playwright/.auth/user.json")
+test.use({ storageState: authFile })
 
 test("Checkout page renders price breakdown", async ({ page }) => {
   await page.goto(`/pemesanan/checkout`)

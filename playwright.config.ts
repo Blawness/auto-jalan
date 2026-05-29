@@ -5,6 +5,7 @@ const authFile = path.join(__dirname, "playwright/.auth/user.json")
 
 export default defineConfig({
   testDir: "./tests",
+  testIgnore: "**/unit/**",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -27,7 +28,6 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
-        storageState: authFile,
       },
       dependencies: ["setup"],
     },
@@ -35,7 +35,6 @@ export default defineConfig({
       name: "firefox",
       use: {
         ...devices["Desktop Firefox"],
-        storageState: authFile,
       },
       dependencies: ["setup"],
     },
@@ -43,7 +42,6 @@ export default defineConfig({
       name: "Mobile Chrome",
       use: {
         ...devices["Pixel 5"],
-        storageState: authFile,
       },
       dependencies: ["setup"],
     },

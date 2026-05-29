@@ -1,6 +1,11 @@
+import path from "path"
 import { test, expect, type Page } from "@playwright/test"
 
+const authFile = path.join(__dirname, "../../playwright/.auth/user.json")
+test.use({ storageState: authFile })
+
 test("Forum list page loads", async ({ page }) => {
+  await page.goto("/lobby")
   await page.getByRole("link", { name: "Forum Komunitas" }).click()
   await expect(page).toHaveURL(/\/forum/)
   await expect(page.getByRole("link", { name: "Ajukan Pertanyaan" })).toBeVisible()

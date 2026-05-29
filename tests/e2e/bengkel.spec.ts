@@ -1,6 +1,11 @@
+import path from "path"
 import { test, expect, type Page } from "@playwright/test"
 
+const authFile = path.join(__dirname, "../../playwright/.auth/user.json")
+test.use({ storageState: authFile })
+
 test("Bengkel page shows map immediately with search bar", async ({ page }) => {
+  await page.goto("/lobby")
   await page.getByRole("link", { name: "Cari Bengkel" }).click()
   await expect(page).toHaveURL(/\/bengkel/)
   await page.waitForLoadState("networkidle")
