@@ -1,12 +1,26 @@
-import { defineConfig } from "@playwright/test"
+import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
   testDir: "./tests",
-  timeout: 30000,
-  expect: { timeout: 10000 },
-  retries: 0,
+  testIgnore: "**/unit/**",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
   use: {
     baseURL: "http://localhost:3001",
-    headless: true,
+    trace: "on-first-retry",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+  webServer: {
+    command: "npx next dev -p 3001",
+    url: "http://localhost:3001",
+    reuseExistingServer: !process.env.CI,
   },
 })

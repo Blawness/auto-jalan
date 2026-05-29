@@ -1,32 +1,24 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Page } from "@playwright/test"
 
-const BASE = "http://localhost:3001"
 const TEST_EMAIL = "playwright@autojalan.test"
 const TEST_PASSWORD = "password123"
 const TEST_NAME = "Playwright User"
 
-// Ensure the test user exists once before the whole suite runs.
 test.beforeAll(async ({ browser }) => {
   const page = await browser.newPage()
-  try {
-    await page.goto(`${BASE}/register`)
-    await page.fill('input[placeholder="Nama lengkap"]', TEST_NAME)
-    await page.fill('input[placeholder="email@example.com"]', TEST_EMAIL)
-    await page.fill('input[placeholder="0812xxxxxxxx"]', "081234567890")
-    await page.fill('input[placeholder="Minimal 8 karakter"]', TEST_PASSWORD)
-    await page.fill('input[placeholder="Masukkan ulang password"]', TEST_PASSWORD)
-    await page.getByRole("button", { name: "Daftar" }).click()
-    // Either lands on /lobby (new user) or shows "email sudah terdaftar" (existing user)
-    await page.waitForTimeout(3000)
-  } catch {
-    // user already exists — that's fine
-  } finally {
-    await page.close()
-  }
+  await page.goto("/register")
+  await page.fill('input[placeholder="Nama lengkap"]', TEST_NAME)
+  await page.fill('input[placeholder="email@example.com"]', TEST_EMAIL)
+  await page.fill('input[placeholder="0812xxxxxxxx"]', "081234567890")
+  await page.fill('input[placeholder="Minimal 8 karakter"]', TEST_PASSWORD)
+  await page.fill('input[placeholder="Masukkan ulang password"]', TEST_PASSWORD)
+  await page.getByRole("button", { name: "Daftar" }).click()
+  await page.waitForURL(/\/lobby/, { timeout: 5000 }).catch(() => {})
+  await page.close()
 })
 
-async function loginHelper(page: any) {
-  await page.goto(`${BASE}/login`)
+async function loginHelper(page: Page) {
+  await page.goto("/login")
   // If middleware already redirected us (already logged in), nothing to do
   if (page.url().includes("/lobby")) return
   await page.fill('input[placeholder="email@example.com"]', TEST_EMAIL)
@@ -38,7 +30,7 @@ async function loginHelper(page: any) {
 // ── ONBOARDING ──────────────────────────────────────────────────────────────
 
 test("Onboarding page loads with 3 slides", async ({ page }) => {
-  await page.goto(BASE)
+  await page.goto("/")
   await expect(page.getByText("Montir Datang ke Lokasi")).toBeVisible()
   await page.getByText("Selanjutnya").click()
   await expect(page.getByText("Sparepart Asli & Bergaransi")).toBeVisible()
@@ -49,7 +41,7 @@ test("Onboarding page loads with 3 slides", async ({ page }) => {
 })
 
 test("Navigate to Register page from onboarding", async ({ page }) => {
-  await page.goto(BASE)
+  await page.goto("/")
   await page.getByText("Selanjutnya").click()
   await page.getByText("Selanjutnya").click()
   await page.getByText("Buat Akun").click()
@@ -58,7 +50,7 @@ test("Navigate to Register page from onboarding", async ({ page }) => {
 })
 
 test("Navigate to Login page from onboarding", async ({ page }) => {
-  await page.goto(BASE)
+  await page.goto("/")
   await page.getByText("Selanjutnya").click()
   await page.getByText("Selanjutnya").click()
   await page.getByText("Masuk").click()
@@ -67,7 +59,7 @@ test("Navigate to Login page from onboarding", async ({ page }) => {
 })
 
 test("Guest skip link goes to lobby", async ({ page }) => {
-  await page.goto(BASE)
+  await page.goto("/")
   await page.getByText("Selanjutnya").click()
   await page.getByText("Selanjutnya").click()
   await page.getByText("Lanjut sebagai Tamu").click()
@@ -78,7 +70,7 @@ test("Guest skip link goes to lobby", async ({ page }) => {
 
 test("Register new user successfully", async ({ page }) => {
   const ts = Date.now()
-  await page.goto(`${BASE}/register`)
+  await page.goto(`/register`)
   await page.fill('input[placeholder="Nama lengkap"]', `User ${ts}`)
   await page.fill('input[placeholder="email@example.com"]', `user${ts}@test.com`)
   await page.fill('input[placeholder="0812xxxxxxxx"]', "081234567890")
@@ -90,7 +82,7 @@ test("Register new user successfully", async ({ page }) => {
 })
 
 test("Login with test user", async ({ page }) => {
-  await page.goto(`${BASE}/login`)
+  await page.goto(`/login`)
   await page.fill('input[placeholder="email@example.com"]', TEST_EMAIL)
   await page.fill('input[placeholder="Password Anda"]', TEST_PASSWORD)
   await page.getByRole("button", { name: "Masuk" }).click()
@@ -100,7 +92,7 @@ test("Login with test user", async ({ page }) => {
 
 test("Logout redirects to login", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/akun`)
+  await page.goto(`/akun`)
   await page.waitForLoadState("networkidle")
   await page.getByRole("button", { name: "Keluar" }).click()
   await page.waitForURL(/\/login/, { timeout: 15000 })
@@ -110,18 +102,18 @@ test("Logout redirects to login", async ({ page }) => {
 // ── AUTH PROTECTION (middleware / proxy.ts) ───────────────────────────────
 
 test("Unauthenticated access to /pemesanan/checkout redirects to login", async ({ page }) => {
-  await page.goto(`${BASE}/pemesanan/checkout`)
+  await page.goto(`/pemesanan/checkout`)
   await page.waitForURL(/\/login/, { timeout: 10000 })
   await expect(page).toHaveURL(/callbackUrl/)
 })
 
 test("Unauthenticated access to /akun redirects to login", async ({ page }) => {
-  await page.goto(`${BASE}/akun`)
+  await page.goto(`/akun`)
   await page.waitForURL(/\/login/, { timeout: 10000 })
 })
 
 test("Unauthenticated access to /lobby is allowed (guest browse)", async ({ page }) => {
-  await page.goto(`${BASE}/lobby`)
+  await page.goto(`/lobby`)
   await expect(page).toHaveURL(/\/lobby/)
   await expect(page.getByText("Jelajahi layanan Auto Jalan")).toBeVisible()
 })
@@ -155,7 +147,7 @@ test("Lobby banner slider shows offer text", async ({ page }) => {
 
 test("About page loads", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/about`)
+  await page.goto(`/about`)
   await expect(page.getByText("Fitur Utama")).toBeVisible()
 })
 
@@ -173,7 +165,7 @@ test("Sparepart page shows search bar and brand chips", async ({ page }) => {
 
 test("Sparepart brand chip navigates to list", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sparepart`)
+  await page.goto(`/sparepart`)
   await page.waitForLoadState("networkidle")
   await page.getByRole("button", { name: "Honda" }).click()
   await page.waitForURL(/\/sparepart\/list/)
@@ -184,7 +176,7 @@ test("Sparepart brand chip navigates to list", async ({ page }) => {
 
 test("Sparepart text search returns results", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sparepart`)
+  await page.goto(`/sparepart`)
   await page.fill('input[placeholder="Cari nama sparepart atau model..."]', "Rem")
   await page.getByRole("button", { name: "Cari" }).click()
   await page.waitForURL(/\/sparepart\/list/)
@@ -193,7 +185,7 @@ test("Sparepart text search returns results", async ({ page }) => {
 
 test("Sparepart detail shows description and reviews", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sparepart/sp1`)
+  await page.goto(`/sparepart/sp1`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Spesifikasi")).toBeVisible()
   await expect(page.getByText("Deskripsi Produk")).toBeVisible()
@@ -203,7 +195,7 @@ test("Sparepart detail shows description and reviews", async ({ page }) => {
 
 test("Add sparepart to cart", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sparepart/sp1`)
+  await page.goto(`/sparepart/sp1`)
   await page.waitForLoadState("networkidle")
   const addBtn = page.getByRole("button", { name: "Tambah ke Keranjang" })
   await addBtn.click()
@@ -226,7 +218,7 @@ test("Montir service list shows name and description but no price", async ({ pag
 
 test("Montir profile page loads and Pilih Montir goes to jasa page", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/montir/m1`)
+  await page.goto(`/montir/m1`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByRole("heading", { name: "Profil Montir" })).toBeVisible()
   await expect(page.getByText("Budi Santoso")).toBeVisible()
@@ -236,7 +228,7 @@ test("Montir profile page loads and Pilih Montir goes to jasa page", async ({ pa
 
 test("Montir jasa checklist page shows services with prices", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/montir/m1/jasa`)
+  await page.goto(`/montir/m1/jasa`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Pilih Jasa")).toBeVisible()
   await expect(page.getByText("Budi Santoso")).toBeVisible()
@@ -250,7 +242,7 @@ test("Montir jasa checklist page shows services with prices", async ({ page }) =
 test("Montir jasa checklist → select service → proceed to checkout", async ({ page }) => {
   await loginHelper(page)
   // Set service first by clicking through montir page
-  await page.goto(`${BASE}/montir`)
+  await page.goto(`/montir`)
   await page.waitForLoadState("networkidle")
   await page.locator("a[href^='/montir/list']").first().click()
   await page.waitForURL(/\/montir\/list/)
@@ -280,7 +272,7 @@ test("Bengkel page shows map immediately with search bar", async ({ page }) => {
 
 test("Bengkel map search filters markers", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/bengkel`)
+  await page.goto(`/bengkel`)
   await page.waitForLoadState("networkidle")
   await page.waitForTimeout(2000)
   await page.fill('input[placeholder="Cari nama bengkel..."]', "Maju")
@@ -290,7 +282,7 @@ test("Bengkel map search filters markers", async ({ page }) => {
 
 test("Bengkel profile page loads", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/bengkel/b1`)
+  await page.goto(`/bengkel/b1`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByRole("heading", { name: "Profil Bengkel" })).toBeVisible()
 })
@@ -299,7 +291,7 @@ test("Bengkel profile page loads", async ({ page }) => {
 
 test("SOS page loads with edit button", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sos`)
+  await page.goto(`/sos`)
   await expect(page.getByText("Darurat!")).toBeVisible()
   await expect(page.getByText("Jl. Sudirman, Jakarta Pusat")).toBeVisible()
   await expect(page.getByRole("button", { name: /Panggil Montir Sekarang/ })).toBeVisible()
@@ -308,7 +300,7 @@ test("SOS page loads with edit button", async ({ page }) => {
 
 test("SOS edit form expands with fields", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sos`)
+  await page.goto(`/sos`)
   await page.waitForLoadState("networkidle")
   await page.getByRole("button", { name: "Edit" }).click()
   await expect(page.getByPlaceholder("Masukkan alamat lengkap")).toBeVisible()
@@ -319,7 +311,7 @@ test("SOS edit form expands with fields", async ({ page }) => {
 
 test("SOS Panggil Montir navigates to pilih-montir page", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sos`)
+  await page.goto(`/sos`)
   await page.getByRole("button", { name: /Panggil Montir Sekarang/ }).click()
   await expect(page).toHaveURL(/\/sos\/pilih-montir/)
   await expect(page.getByRole("heading", { name: "Pilih Montir" })).toBeVisible()
@@ -327,7 +319,7 @@ test("SOS Panggil Montir navigates to pilih-montir page", async ({ page }) => {
 
 test("SOS pilih-montir shows mechanics with tariffs", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sos/pilih-montir`)
+  await page.goto(`/sos/pilih-montir`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Budi Santoso")).toBeVisible()
   // Should show tariffs (Rp format)
@@ -338,7 +330,7 @@ test("SOS pilih-montir shows mechanics with tariffs", async ({ page }) => {
 
 test("SOS pilih-montir → select → mencari → tracking", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/sos/pilih-montir`)
+  await page.goto(`/sos/pilih-montir`)
   await page.waitForLoadState("networkidle")
   await page.getByRole("button", { name: "Pilih Montir Ini" }).first().click()
   await page.waitForURL(/\/sos\/mencari/, { timeout: 10000 })
@@ -353,14 +345,14 @@ test("SOS pilih-montir → select → mencari → tracking", async ({ page }) =>
 
 test("Checkout page renders price breakdown", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/pemesanan/checkout`)
+  await page.goto(`/pemesanan/checkout`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Fixed Price Guarantee")).toBeVisible()
 })
 
 test("Ongoing page renders", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/pemesanan/ongoing`)
+  await page.goto(`/pemesanan/ongoing`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByRole("heading", { name: "Pesanan Berjalan" })).toBeVisible()
   await expect(page.getByText("Dana Anda ditahan")).toBeVisible()
@@ -371,7 +363,7 @@ test("Ongoing page renders", async ({ page }) => {
 
 test("Ulasan page renders with star ratings and chips", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/ulasan`)
+  await page.goto(`/ulasan`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Rating Mekanik")).toBeVisible()
   await expect(page.getByText("Kualitas Suku Cadang")).toBeVisible()
@@ -389,13 +381,13 @@ test("Forum list page loads", async ({ page }) => {
 })
 
 test("Forum create thread requires login (ajukan is protected)", async ({ page }) => {
-  await page.goto(`${BASE}/forum/ajukan`)
+  await page.goto(`/forum/ajukan`)
   await page.waitForURL(/\/login/, { timeout: 10000 })
 })
 
 test("Forum create thread when logged in", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/forum/ajukan`)
+  await page.goto(`/forum/ajukan`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByRole("heading", { name: "Ajukan Pertanyaan" })).toBeVisible()
   await page.fill('input[placeholder="Judul pertanyaan"]', "Test question from Playwright")
@@ -410,7 +402,7 @@ test("Forum create thread when logged in", async ({ page }) => {
 
 test("Keranjang page shows empty state when no items", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/keranjang`)
+  await page.goto(`/keranjang`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Keranjang masih kosong")).toBeVisible()
 })
@@ -419,7 +411,7 @@ test("Keranjang page shows empty state when no items", async ({ page }) => {
 
 test("Riwayat page loads with Ongoing and Selesai tabs", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/riwayat`)
+  await page.goto(`/riwayat`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByRole("tab", { name: "Ongoing" })).toBeVisible()
   await expect(page.getByRole("tab", { name: "Selesai" })).toBeVisible()
@@ -429,7 +421,7 @@ test("Riwayat page loads with Ongoing and Selesai tabs", async ({ page }) => {
 
 test("Akun page shows user email and logout button", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/akun`)
+  await page.goto(`/akun`)
   await page.waitForLoadState("networkidle")
   await expect(page.getByText("Email")).toBeVisible()
   await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible()
@@ -439,7 +431,7 @@ test("Akun page shows user email and logout button", async ({ page }) => {
 
 test("Bottom navbar navigates between main pages", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/lobby`)
+  await page.goto(`/lobby`)
   await page.waitForLoadState("networkidle")
   await page.locator('a[href="/akun"]').last().click()
   await expect(page).toHaveURL(/\/akun/)
@@ -453,14 +445,14 @@ test("Bottom navbar navigates between main pages", async ({ page }) => {
 
 test("SOS FAB in bottom navbar navigates to /sos", async ({ page }) => {
   await loginHelper(page)
-  await page.goto(`${BASE}/lobby`)
+  await page.goto(`/lobby`)
   await page.waitForLoadState("networkidle")
   await page.locator('a[href="/sos"].rounded-full').click()
   await expect(page).toHaveURL(/\/sos/)
 })
 
 test("Guest bottom navbar redirects to login for protected routes", async ({ page }) => {
-  await page.goto(`${BASE}/lobby`)
+  await page.goto(`/lobby`)
   await page.waitForLoadState("networkidle")
   await page.waitForTimeout(1000)
   // Guest clicking Keranjang should go to login
