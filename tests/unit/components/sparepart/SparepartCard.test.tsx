@@ -25,7 +25,8 @@ describe('SparepartCard', () => {
 
   it('renders formatted price containing the amount', () => {
     render(<SparepartCard {...defaultProps} />)
-    const priceEl = screen.getByText(/85/)
+    // formatRupiah(85000) → "Rp 85.000" in id-ID locale; scope to <p> to avoid false matches
+    const priceEl = screen.getByText(/85[.,]000/, { selector: 'p' })
     expect(priceEl).toBeInTheDocument()
   })
 

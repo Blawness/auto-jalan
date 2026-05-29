@@ -58,6 +58,19 @@ describe('cartStore', () => {
     expect(items).toHaveLength(0)
   })
 
+  it('setQty on non-existent item does nothing', () => {
+    useCartStore.getState().setQty('nonexistent', 5)
+    const { items } = useCartStore.getState()
+    expect(items).toHaveLength(0)
+  })
+
+  it('removeItem on non-existent item does nothing', () => {
+    useCartStore.getState().addItem('sp1')
+    useCartStore.getState().removeItem('nonexistent')
+    const { items } = useCartStore.getState()
+    expect(items).toHaveLength(1)
+  })
+
   it('clear empties the cart', () => {
     useCartStore.getState().addItem('sp1')
     useCartStore.getState().addItem('sp2')

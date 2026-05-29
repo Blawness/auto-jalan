@@ -58,6 +58,36 @@ describe('BottomNavbar', () => {
     expect(homeLink).not.toHaveClass('bg-blue-50')
   })
 
+  it('Riwayat link has active class when pathname is /riwayat', () => {
+    mockUsePathname.mockReturnValue('/riwayat')
+    render(<BottomNavbar />)
+    const riwayatLink = screen.getByRole('link', { name: /riwayat/i })
+    expect(riwayatLink).toHaveClass('bg-blue-50', 'text-blue-600')
+  })
+
+  it('Akun link has active class when pathname is /akun', () => {
+    mockUsePathname.mockReturnValue('/akun')
+    render(<BottomNavbar />)
+    const akunLink = screen.getByRole('link', { name: /akun/i })
+    expect(akunLink).toHaveClass('bg-blue-50', 'text-blue-600')
+  })
+
+  it('unauthenticated user: Riwayat link redirects to /login with callbackUrl', () => {
+    mockUseSession.mockReturnValue({ status: 'unauthenticated' } as any)
+    mockUsePathname.mockReturnValue('/lobby')
+    render(<BottomNavbar />)
+    const riwayatLink = screen.getByRole('link', { name: /riwayat/i })
+    expect(riwayatLink).toHaveAttribute('href', '/login?callbackUrl=%2Friwayat')
+  })
+
+  it('unauthenticated user: Akun link redirects to /login with callbackUrl', () => {
+    mockUseSession.mockReturnValue({ status: 'unauthenticated' } as any)
+    mockUsePathname.mockReturnValue('/lobby')
+    render(<BottomNavbar />)
+    const akunLink = screen.getByRole('link', { name: /akun/i })
+    expect(akunLink).toHaveAttribute('href', '/login?callbackUrl=%2Fakun')
+  })
+
   it('unauthenticated user: Keranjang link redirects to /login with callbackUrl', () => {
     mockUseSession.mockReturnValue({ status: 'unauthenticated' } as any)
     mockUsePathname.mockReturnValue('/lobby')
