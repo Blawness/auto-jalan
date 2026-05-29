@@ -140,7 +140,7 @@ function OngoingPageInner() {
 
 export default function OngoingPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-sm text-gray-500">Memuat...</div>}>
+    <Suspense fallback={<div className="flex min-h-screen flex-col bg-[#f4f6f9] animate-pulse p-4 gap-4"><div className="h-12 rounded-xl bg-gray-200" /><div className="h-40 rounded-xl bg-gray-200" /><div className="h-24 rounded-xl bg-gray-200" /></div>}>
       <OngoingPageInner />
     </Suspense>
   )

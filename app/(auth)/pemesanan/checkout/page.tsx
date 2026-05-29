@@ -29,19 +29,19 @@ export default function CheckoutPage() {
       return
     }
     setLoading(true)
-    try {
-      const result = await createOrder({
-        mekanikId: selectedMekanikId,
-        serviceId: selectedServiceId,
-        sparepartItems: items,
-        biayaKedatangan,
-      })
+    const result = await createOrder({
+      mekanikId: selectedMekanikId,
+      serviceId: selectedServiceId,
+      sparepartItems: items,
+      biayaKedatangan,
+    })
+    if (result.error) {
+      toast.error(result.error)
+      setLoading(false)
+    } else {
       clear()
       useUiStore.getState().resetFlow()
       router.push(`/pemesanan/ongoing?orderId=${result.orderId}&mekanikId=${selectedMekanikId}`)
-    } catch {
-      toast.error("Gagal membuat pesanan")
-      setLoading(false)
     }
   }
 

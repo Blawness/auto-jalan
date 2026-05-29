@@ -15,17 +15,10 @@ test("Lobby shows all main sections when logged in", async ({ page }) => {
   await expect(page.getByText("Sparepart Populer")).toBeVisible()
 })
 
-test("Lobby banner slider shows offer text", async ({ page }) => {
+test("Lobby banner slider is visible", async ({ page }) => {
   await page.goto(`/lobby`)
-  const bannerTexts = ["20% OFF", "1000+", "15 min", "Gratis"]
-  let found = false
-  for (const text of bannerTexts) {
-    if (await page.getByText(text).isVisible().catch(() => false)) {
-      found = true
-      break
-    }
-  }
-  expect(found).toBeTruthy()
+  await page.waitForLoadState("networkidle")
+  await expect(page.getByRole("link").filter({ hasText: /Sekarang/ }).first()).toBeVisible({ timeout: 5000 })
 })
 
 test("About page loads", async ({ page }) => {

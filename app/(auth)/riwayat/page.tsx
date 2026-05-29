@@ -3,13 +3,14 @@ import { db } from "@/lib/db"
 import { orders } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { formatRupiah } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default async function RiwayatPage() {
   const session = await auth()
-  if (!session?.user?.id) return null
+  if (!session?.user?.id) redirect("/login")
 
   const allOrders = await db.select().from(orders).where(eq(orders.userId, session.user.id))
 

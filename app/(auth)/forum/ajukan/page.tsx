@@ -24,13 +24,13 @@ export default function AjukanPertanyaanPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    try {
-      await createThread({ judul, kategori, deskripsi })
+    const result = await createThread({ judul, kategori, deskripsi })
+    if (result.error) {
+      toast.error(result.error)
+      setLoading(false)
+    } else {
       toast.success("Pertanyaan berhasil diajukan")
       router.push("/forum")
-    } catch {
-      toast.error("Gagal mengajukan pertanyaan")
-      setLoading(false)
     }
   }
 

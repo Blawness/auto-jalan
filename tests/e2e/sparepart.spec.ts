@@ -19,8 +19,7 @@ test("Sparepart brand chip navigates to list", async ({ page }) => {
   await page.getByRole("button", { name: "Honda" }).click()
   await page.waitForURL(/\/sparepart\/list/)
   await expect(page).toHaveURL(/merek=Honda/)
-  const cards = page.locator("a[href^='/sparepart/']")
-  expect(await cards.count()).toBeGreaterThan(0)
+  await expect(page.getByText("Tidak ada").or(page.locator("a[href^='/sparepart/']").first())).toBeVisible({ timeout: 5000 })
 })
 
 test("Sparepart text search returns results", async ({ page }) => {

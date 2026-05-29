@@ -16,13 +16,13 @@ export function AnswerForm({ threadId }: { threadId: string }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    try {
-      await createAnswer({ threadId, isi })
+    const result = await createAnswer({ threadId, isi })
+    if (result.error) {
+      toast.error(result.error)
+    } else {
       setIsi("")
       toast.success("Jawaban terkirim")
       router.refresh()
-    } catch {
-      toast.error("Gagal mengirim jawaban")
     }
     setLoading(false)
   }

@@ -14,7 +14,13 @@ export async function submitReview(data: {
   teks?: string
 }) {
   const session = await auth()
-  if (!session?.user?.id) throw new Error("Not authenticated")
+  if (!session?.user?.id) return { error: "Unauthorized" }
+
+  if (!data.mekanikId?.trim()) return { error: "Mekanik tidak valid" }
+  if (!data.orderId?.trim()) return { error: "Pesanan tidak valid" }
+  if (typeof data.ratingMekanik !== "number" || data.ratingMekanik < 1 || data.ratingMekanik > 5) return { error: "Rating mekanik harus 1-5" }
+  if (data.ratingSparepart != null && (typeof data.ratingSparepart !== "number" || data.ratingSparepart < 1 || data.ratingSparepart > 5)) return { error: "Rating sparepart harus 1-5" }
+  if (!Array.isArray(data.tags)) return { error: "Tags tidak valid" }
 
   await db.insert(reviews).values({
     id: uuid(),
@@ -24,7 +30,7 @@ export async function submitReview(data: {
     ratingMekanik: data.ratingMekanik,
     ratingSparepart: data.ratingSparepart ?? null,
     tags: data.tags,
-    teks: data.teks ?? null,
+    teks: data.teks?.trim() ?? null,
   })
 
   return { success: true }

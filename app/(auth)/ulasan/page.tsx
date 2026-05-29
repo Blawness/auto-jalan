@@ -38,20 +38,20 @@ function UlasanPageInner() {
       return
     }
     setLoading(true)
-    try {
-      await submitReview({
-        mekanikId,
-        orderId,
-        ratingMekanik,
-        ratingSparepart: ratingSparepart > 0 ? ratingSparepart : undefined,
-        tags: selectedChips,
-        teks: teks || undefined,
-      })
+    const result = await submitReview({
+      mekanikId,
+      orderId,
+      ratingMekanik,
+      ratingSparepart: ratingSparepart > 0 ? ratingSparepart : undefined,
+      tags: selectedChips,
+      teks: teks || undefined,
+    })
+    if (result.error) {
+      toast.error(result.error)
+      setLoading(false)
+    } else {
       toast.success("Ulasan terkirim!")
       router.push("/lobby")
-    } catch {
-      toast.error("Gagal mengirim ulasan")
-      setLoading(false)
     }
   }
 
@@ -117,7 +117,7 @@ function UlasanPageInner() {
 
 export default function UlasanPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-sm text-gray-500">Memuat...</div>}>
+    <Suspense fallback={<div className="flex min-h-screen flex-col bg-[#f4f6f9] animate-pulse p-4 gap-4"><div className="h-12 rounded-xl bg-gray-200" /><div className="h-24 rounded-xl bg-gray-200" /><div className="h-24 rounded-xl bg-gray-200" /></div>}>
       <UlasanPageInner />
     </Suspense>
   )

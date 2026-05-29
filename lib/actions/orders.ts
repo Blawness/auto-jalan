@@ -13,10 +13,16 @@ export async function createOrder(data: {
   biayaKedatangan: number
 }) {
   const session = await auth()
-  if (!session?.user?.id) throw new Error("Not authenticated")
+  if (!session?.user?.id) return { error: "Unauthorized" }
+
+  if (!data.mekanikId?.trim()) return { error: "Pilih mekanik" }
+  if (!data.serviceId?.trim()) return { error: "Pilih layanan" }
+  if (typeof data.biayaKedatangan !== "number" || data.biayaKedatangan < 0) return { error: "Biaya kedatangan tidak valid" }
+  if (!Array.isArray(data.sparepartItems) || data.sparepartItems.length === 0) return { error: "Pilih minimal satu sparepart" }
 
   let sparepartTotal = 0
   for (const item of data.sparepartItems) {
+    if (!item.sparepartId || typeof item.qty !== "number" || item.qty < 1) return { error: "Data sparepart tidak valid" }
     const [part] = await db
       .select()
       .from(spareparts)

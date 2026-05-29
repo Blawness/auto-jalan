@@ -13,19 +13,28 @@ export async function registerUser(formData: {
   noHP: string
   password: string
 }) {
-  const email = formData.email.toLowerCase().trim()
+  const nama = formData.nama?.trim()
+  const email = formData.email?.toLowerCase().trim()
+  const noHP = formData.noHP?.trim()
+  const password = formData.password
+
+  if (!nama || nama.length < 2) return { error: "Nama minimal 2 karakter" }
+  if (!email || !email.includes("@")) return { error: "Email tidak valid" }
+  if (!noHP) return { error: "Nomor HP harus diisi" }
+  if (!password || password.length < 6) return { error: "Password minimal 6 karakter" }
+
   const [existing] = await db
     .select({ id: users.id })
     .from(users)
     .where(eq(users.email, email))
     .limit(1)
   if (existing) return { error: "Email sudah terdaftar" }
-  const hashedPassword = await bcrypt.hash(formData.password, 12)
+  const hashedPassword = await bcrypt.hash(password, 12)
   await db.insert(users).values({
     id: uuid(),
-    name: formData.nama,
+    name: nama,
     email,
-    noHP: formData.noHP,
+    noHP,
     password: hashedPassword,
     role: "user",
   })
