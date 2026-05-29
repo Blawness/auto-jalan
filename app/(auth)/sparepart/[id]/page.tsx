@@ -28,36 +28,40 @@ export default async function SparepartDetailPage({ params }: Props) {
           <div><h2 className="text-lg font-bold">{part.nama}</h2><p className="mt-1 text-xl font-bold text-blue-600">{formatRupiah(part.harga)}</p></div>
           <KeaslianBadge keaslian={part.keaslian} />
         </div>
-        <StokBadge stok={part.stok} />
-        <div className="space-y-2 rounded-xl border bg-white p-4">
-          <h3 className="text-sm font-semibold">Spesifikasi</h3>
-          {Object.entries(part.spesifikasi as Record<string, string>).map(([key, value]) => (
-            <div key={key} className="flex justify-between text-sm">
-              <span className="capitalize text-gray-500">{key.replace(/_/g, " ")}</span>
-              <span className="font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-        <AddToCartButton partId={part.id} stok={part.stok} />
 
-        {/* Deskripsi */}
-        <div className="space-y-2 rounded-xl border bg-white p-4">
-          <h3 className="text-sm font-semibold">Deskripsi Produk</h3>
+        <StokBadge stok={part.stok} />
+
+        <div className="rounded-xl bg-gray-50 p-4">
+          <h3 className="mb-2 text-sm font-semibold">Spesifikasi</h3>
+          <div className="space-y-1 text-sm text-gray-600">
+            {Object.entries(part.spesifikasi).map(([key, value]) => (
+              <div key={key} className="flex justify-between">
+                <span className="text-gray-500">{key}</span>
+                <span>{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-gray-50 p-4">
+          <h3 className="mb-2 text-sm font-semibold">Deskripsi Produk</h3>
           <p className="text-sm leading-relaxed text-gray-600">
-            {part.nama} adalah suku cadang berkualitas tinggi yang kompatibel dengan berbagai kendaraan.
-            Dibuat dengan standar {part.keaslian === "OEM" ? "pabrikan asli (OEM)" : part.keaslian === "Aftermarket" ? "aftermarket terpercaya" : "harga terjangkau (KW)"} untuk memastikan performa dan ketahanan optimal.
-            Cocok untuk perawatan rutin maupun penggantian darurat.
+            Produk ini dirancang untuk memberikan performa terbaik pada kendaraan Anda. Dengan bahan
+            berkualitas tinggi dan proses produksi yang ketat, sparepart ini terjamin keaslian dan
+            ketahanannya. Cocok digunakan untuk berbagai model kendaraan.
           </p>
         </div>
+
+        <AddToCartButton partId={part.id} />
 
         {/* Ulasan Pembeli */}
         <div className="space-y-3 rounded-xl border bg-white p-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">Ulasan Pembeli</h3>
-            <div className="flex items-center gap-1 text-sm font-semibold text-amber-500">
+            <div className="flex items-center gap-1 text-sm font-semibold text-amber-700">
               <Star className="h-4 w-4 fill-amber-500" />
               4.7
-              <span className="text-xs font-normal text-gray-400">(24 ulasan)</span>
+              <span className="text-xs font-normal text-gray-500">(24 ulasan)</span>
             </div>
           </div>
           {[
@@ -74,7 +78,7 @@ export default async function SparepartDetailPage({ params }: Props) {
                 </div>
               </div>
               <p className="mt-1 text-xs text-gray-600">{ulasan.teks}</p>
-              <p className="mt-1 text-[10px] text-gray-400">{ulasan.waktu}</p>
+              <p className="mt-1 text-[10px] text-gray-500">{ulasan.waktu}</p>
             </div>
           ))}
         </div>

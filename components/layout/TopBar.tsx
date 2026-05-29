@@ -13,6 +13,7 @@ export function TopBar({ title }: { title: string }) {
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Kembali"
           onClick={() => router.back()}
           className="mr-2"
         >

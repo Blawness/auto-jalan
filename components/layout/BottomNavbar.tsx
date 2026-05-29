@@ -36,7 +36,7 @@ export function BottomNavbar() {
               key={href}
               href={navHref(href, guestBlocked)}
               className={`flex flex-col items-center gap-[3px] rounded-xl px-[14px] py-[6px] text-[10px] font-semibold ${
-                active ? "bg-blue-50 text-blue-600" : "text-gray-300"
+                active ? "bg-blue-50 text-blue-600" : "text-gray-500"
               }`}
             >
               <div className="relative">
@@ -54,6 +54,7 @@ export function BottomNavbar() {
 
         <Link
           href="/sos"
+          aria-label="Darurat SOS"
           className="-mt-[26px] flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-full border-[3px] border-[#f4f6f9] bg-red-500"
         >
           <Siren className="h-[22px] w-[22px] text-white" />
@@ -66,7 +67,7 @@ export function BottomNavbar() {
               key={href}
               href={navHref(href, guestBlocked)}
               className={`flex flex-col items-center gap-[3px] rounded-xl px-[14px] py-[6px] text-[10px] font-semibold ${
-                active ? "bg-blue-50 text-blue-600" : "text-gray-300"
+                active ? "bg-blue-50 text-blue-600" : "text-gray-500"
               }`}
             >
               <Icon className="h-5 w-5" />

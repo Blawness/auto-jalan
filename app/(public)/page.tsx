@@ -50,10 +50,15 @@ export default function OnboardingPage() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mb-12 mt-8 flex gap-2">
+      <div className="mb-12 mt-8 flex gap-2" role="tablist" aria-label="Slide navigasi">
         {slides.map((_, i) => (
-          <div
+          <button
             key={i}
+            type="button"
+            role="tab"
+            aria-selected={i === step}
+            aria-label={`Slide ${i + 1}`}
+            onClick={() => setStep(i)}
             className={`h-2 rounded-full transition-all ${
               i === step ? "w-6 bg-blue-600" : "w-2 bg-gray-300"
             }`}

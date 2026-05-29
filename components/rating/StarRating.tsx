@@ -21,6 +21,7 @@ export function StarRating({ value, onChange, max = 5 }: Props) {
           <button
             key={i}
             type="button"
+            aria-label={`Rating ${starValue} dari ${max}`}
             className="transition-transform hover:scale-110"
             onClick={() => onChange(starValue)}
             onMouseEnter={() => setHovered(starValue)}

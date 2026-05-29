@@ -88,7 +88,7 @@ export default function PilihMontirPage() {
                 <p className="font-semibold text-gray-900">{montir.nama}</p>
                 <p className="text-xs text-gray-500 truncate">{montir.bengkel}</p>
                 <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
-                  <span className="flex items-center gap-0.5 text-amber-500 font-medium">
+                  <span className="flex items-center gap-0.5 text-amber-700 font-medium">
                     <Star className="h-3 w-3 fill-amber-500" />
                     {montir.rating}
                   </span>

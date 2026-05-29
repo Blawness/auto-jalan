@@ -148,10 +148,14 @@ function BannerSlider() {
           </div>
         </motion.div>
       </AnimatePresence>
-      <div className="mt-2 flex justify-center gap-1.5 pb-1">
+      <div className="mt-2 flex justify-center gap-1.5 pb-1" role="tablist" aria-label="Banner promo">
         {banners.map((_, i) => (
           <button
             key={i}
+            type="button"
+            role="tab"
+            aria-selected={i === current}
+            aria-label={`Promo ${i + 1}`}
             onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i) }}
             className={`h-[6px] rounded-full transition-all ${
               i === current ? "w-[18px] bg-blue-600" : "w-[6px] bg-gray-300"
@@ -171,7 +175,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
           <div className="flex items-center gap-2">
             <MapPin className="h-[18px] w-[18px] text-blue-600" />
             <div>
-              <div className="text-[10px] leading-none text-gray-400">Lokasi saat ini</div>
+              <div className="text-[10px] leading-none text-gray-500">Lokasi saat ini</div>
               <div className="text-[13px] font-bold leading-[1.4] text-blue-600">Jakarta Selatan</div>
             </div>
           </div>
@@ -198,7 +202,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
 
       <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ maxHeight: "calc(100vh - 62px)" }}>
         <div className="px-4 pb-0 pt-[14px]">
-          <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-600">
             {isGuest ? "Jelajahi layanan Auto Jalan" : "Selamat datang kembali,"}
           </p>
           <h2 className="mt-[2px] text-[20px] font-bold text-gray-900">{userName}</h2>
@@ -225,7 +229,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
 
         <div className="mx-4 mt-3 flex items-center gap-[10px] rounded-[14px] border border-gray-200 bg-white px-[14px] py-[10px]">
           <Search className="h-4 w-4 flex-shrink-0 text-gray-400" />
-          <span className="flex-1 text-[13px] text-gray-400">Cari sparepart, montir, bengkel...</span>
+          <span className="flex-1 text-[13px] text-gray-500">Cari sparepart, montir, bengkel...</span>
           <div className="flex h-[30px] w-[30px] flex-shrink-0 items-center justify-center rounded-lg bg-blue-50">
             <Search className="h-[14px] w-[14px] text-blue-600" />
           </div>
@@ -278,7 +282,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
                       </span>
                   }
                 </div>
-                <span className="text-[11px] font-medium text-gray-500">{brand}</span>
+                <span className="text-[11px] font-medium text-gray-600">{brand}</span>
               </Link>
             )
           })}
@@ -300,7 +304,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
               <div className="h-20 overflow-hidden rounded-[10px] bg-gray-100">
                 <SafeImage src={sp.foto} alt={sp.nama} className="h-full w-full object-cover" />
               </div>
-              <div className="mt-[10px] flex items-center gap-[3px] text-[11px] font-semibold text-amber-500">
+              <div className="mt-[10px] flex items-center gap-[3px] text-[11px] font-semibold text-amber-700">
                 <Star className="h-[11px] w-[11px] fill-amber-500" />
                 {((4 + (parseInt(sp.id.slice(2)) % 10) * 0.1) % 5).toFixed(1)}
               </div>
