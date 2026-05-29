@@ -4,11 +4,12 @@ import { TopBar } from "@/components/layout/TopBar"
 import { SparepartFilter } from "./SparepartFilter"
 
 export default async function SparepartPage() {
-  const allVehicles = await db.select().from(vehicles)
+  const result = await db.selectDistinct({ merek: vehicles.merek }).from(vehicles).orderBy(vehicles.merek)
+  const brands = result.map((r) => r.merek)
   return (
     <div>
       <TopBar title="Cari Sparepart" />
-      <SparepartFilter vehicles={allVehicles} />
+      <SparepartFilter brands={brands} />
     </div>
   )
 }

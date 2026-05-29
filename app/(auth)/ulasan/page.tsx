@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { StarRating } from "@/components/rating/StarRating"
 import { ChipButton } from "@/components/rating/ChipButton"
@@ -14,8 +15,11 @@ import Link from "next/link"
 
 const quickChips = ["Montir Ramah", "Datang Tepat Waktu", "Pengerjaan Rapi", "Harga Sesuai"]
 
-export default function UlasanPage() {
+function UlasanPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const orderId = searchParams.get("orderId") ?? ""
+  const mekanikId = searchParams.get("mekanikId") ?? ""
   const [loading, setLoading] = useState(false)
   const [ratingMekanik, setRatingMekanik] = useState(0)
   const [ratingSparepart, setRatingSparepart] = useState(0)
@@ -36,8 +40,8 @@ export default function UlasanPage() {
     setLoading(true)
     try {
       await submitReview({
-        mekanikId: "m1",
-        orderId: "dummy",
+        mekanikId,
+        orderId,
         ratingMekanik,
         ratingSparepart: ratingSparepart > 0 ? ratingSparepart : undefined,
         tags: selectedChips,
@@ -108,5 +112,13 @@ export default function UlasanPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function UlasanPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-sm text-gray-500">Memuat...</div>}>
+      <UlasanPageInner />
+    </Suspense>
   )
 }

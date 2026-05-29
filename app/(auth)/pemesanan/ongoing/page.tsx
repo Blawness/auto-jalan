@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { EscrowBanner } from "@/components/pemesanan/EscrowBanner"
 import { SliderButton } from "@/components/pemesanan/SliderButton"
@@ -17,8 +18,11 @@ import {
 import { formatRupiah } from "@/lib/utils"
 import { Star, Car, Award, AlertTriangle } from "lucide-react"
 
-export default function OngoingPage() {
+function OngoingPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const orderId = searchParams.get("orderId") ?? ""
+  const mekanikId = searchParams.get("mekanikId") ?? ""
   const [showKonfirmasi, setShowKonfirmasi] = useState(false)
   const [showKomplain, setShowKomplain] = useState(false)
 
@@ -108,7 +112,7 @@ export default function OngoingPage() {
             <Button
               onClick={() => {
                 setShowKonfirmasi(false)
-                router.push("/ulasan")
+                router.push(`/ulasan?orderId=${orderId}&mekanikId=${mekanikId}`)
               }}
             >
               Konfirmasi & Lanjut Ulasan
@@ -131,5 +135,13 @@ export default function OngoingPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+export default function OngoingPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-sm text-gray-500">Memuat...</div>}>
+      <OngoingPageInner />
+    </Suspense>
   )
 }

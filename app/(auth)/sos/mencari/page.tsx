@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Search } from "lucide-react"
@@ -8,25 +8,22 @@ import { useUiStore } from "@/stores/uiStore"
 
 export default function SOSMencariPage() {
   const router = useRouter()
-  const queuedRef = useRef(false)
 
   useEffect(() => {
-    if (queuedRef.current) return
-    queuedRef.current = true
-
     useUiStore.getState().setSOSStatus("mencari")
-
     const timer = setTimeout(() => {
-      useUiStore.getState().initSOSTracking({
-        mechId: "m1",
-        mechName: "Budi Santoso",
-        mechFoto: "/images/mekaniks/m1.jpg",
-        mechLat: -6.22,
-        mechLng: 106.86,
-      })
+      const { sosState } = useUiStore.getState()
+      if (!sosState.mechId) {
+        useUiStore.getState().initSOSTracking({
+          mechId: "m1",
+          mechName: "Budi Santoso",
+          mechFoto: "/images/mekaniks/m1.jpg",
+          mechLat: -6.22,
+          mechLng: 106.86,
+        })
+      }
       router.push("/sos/tracking")
     }, 3000)
-
     return () => clearTimeout(timer)
   }, [router])
 

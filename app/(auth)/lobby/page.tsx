@@ -21,6 +21,7 @@ async function getPopularSpareparts() {
       harga: spareparts.harga,
       keaslian: spareparts.keaslian,
       stok: spareparts.stok,
+      foto: spareparts.foto,
     })
     .from(spareparts)
     .where(sql`${spareparts.stok} > 0`)

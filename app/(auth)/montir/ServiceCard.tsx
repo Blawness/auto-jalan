@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { formatRupiah } from "@/lib/utils"
 import { useUiStore } from "@/stores/uiStore"
 import { Wrench, Droplets, Cog, CircleGauge, Zap, Wind, CircleDot, Gauge } from "lucide-react"
 
@@ -25,11 +24,6 @@ export function ServiceCard({ service }: { service: Service }) {
       <div className="min-w-0 flex-1">
         <h3 className="text-sm font-semibold">{service.nama}</h3>
         <p className="mt-0.5 text-xs text-gray-500">{service.deskripsi}</p>
-        <div className="mt-2 flex items-center gap-3 text-xs">
-          <span className="font-semibold text-blue-600">{formatRupiah(service.hargaJasa)}</span>
-          <span className="text-gray-400">&middot;</span>
-          <span className="text-gray-500">{service.estimasiWaktu}</span>
-        </div>
       </div>
     </Link>
   )

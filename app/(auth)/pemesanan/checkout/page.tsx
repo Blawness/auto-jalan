@@ -38,7 +38,7 @@ export default function CheckoutPage() {
       })
       clear()
       useUiStore.getState().resetFlow()
-      router.push(`/pemesanan/ongoing?orderId=${result.orderId}`)
+      router.push(`/pemesanan/ongoing?orderId=${result.orderId}&mekanikId=${selectedMekanikId}`)
     } catch {
       toast.error("Gagal membuat pesanan")
       setLoading(false)

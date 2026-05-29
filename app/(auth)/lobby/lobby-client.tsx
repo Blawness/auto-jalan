@@ -17,7 +17,9 @@ import {
   MessageSquare,
   LogIn,
   UserPlus,
+  Siren,
 } from "lucide-react"
+import { SafeImage } from "@/components/ui/safe-image"
 import { motion, AnimatePresence } from "framer-motion"
 import { formatRupiah } from "@/lib/utils"
 
@@ -47,6 +49,7 @@ interface SparepartRow {
   harga: number
   keaslian: "OEM" | "Aftermarket" | "KW"
   stok: number
+  foto: string
 }
 
 interface Props {
@@ -66,28 +69,44 @@ const layananGrid = [
 
 const banners = [
   {
-    bg: "bg-blue-600",
-    badge: "Promo Hari Ini",
-    title: "Servis Cepat,\nHarga Pasti",
+    gradient: "from-blue-600 to-blue-800",
+    badge: "Promo Spesial",
+    offer: "20% OFF",
+    title: "Servis Perdana",
+    subtitle: "Teknisi bersertifikat siap datang",
     href: "/montir",
     cta: "Pesan Sekarang",
     Icon: Car,
   },
   {
-    bg: "bg-green-600",
-    badge: "Sparepart",
-    title: "Original & Bergaransi,\nHarga Bersaing",
+    gradient: "from-green-500 to-emerald-700",
+    badge: "Sparepart Ori",
+    offer: "1000+",
+    title: "Pilihan Suku Cadang",
+    subtitle: "OEM, Aftermarket & bergaransi",
     href: "/sparepart",
-    cta: "Cari Sparepart",
+    cta: "Belanja Sekarang",
     Icon: ShoppingBag,
   },
   {
-    bg: "bg-purple-600",
-    badge: "Montir 24 Jam",
-    title: "Darurat di Jalan?\nMontir Siap Bantu",
+    gradient: "from-red-500 to-rose-700",
+    badge: "SOS Darurat",
+    offer: "< 15 min",
+    title: "Montir ke Lokasi",
+    subtitle: "Respons cepat 24 jam sehari",
     href: "/sos",
     cta: "Panggil Sekarang",
-    Icon: Wrench,
+    Icon: Siren,
+  },
+  {
+    gradient: "from-violet-600 to-purple-800",
+    badge: "Komunitas",
+    offer: "Gratis",
+    title: "Forum Otomotif",
+    subtitle: "Tanya jawab dengan para ahli",
+    href: "/forum",
+    cta: "Gabung Sekarang",
+    Icon: MessageSquare,
   },
 ]
 
@@ -111,10 +130,10 @@ function BannerSlider() {
     exit: (d: number) => ({ x: d > 0 ? -320 : 320, opacity: 0 }),
   }
 
-  const { bg, badge, title, href, cta, Icon: BannerIcon } = banners[current]
+  const { gradient, badge, offer, title, subtitle, href, cta, Icon: BannerIcon } = banners[current]
 
   return (
-    <div className="mx-4 mt-[14px] overflow-hidden rounded-[18px]">
+    <div className="mx-4 mt-[14px]">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={current}
@@ -124,25 +143,29 @@ function BannerSlider() {
           animate="center"
           exit="exit"
           transition={{ duration: 0.35, ease: "easeInOut" }}
-          className={`flex items-center justify-between ${bg} p-[18px]`}
+          className={`relative overflow-hidden rounded-[18px] bg-gradient-to-br ${gradient} p-[18px] flex items-center justify-between min-h-[120px]`}
         >
-          <div className="flex-1">
-            <span className="inline-block rounded-[20px] bg-white/20 px-[10px] py-[3px] text-[10px] font-semibold text-white">
+          {/* Decorative background circle */}
+          <div className="absolute right-[-20px] top-[-20px] h-32 w-32 rounded-full bg-white opacity-10" />
+          <div className="absolute right-10 bottom-[-30px] h-20 w-20 rounded-full bg-white opacity-10" />
+
+          <div className="relative flex-1 pr-2">
+            <span className="inline-block rounded-full bg-white/20 px-[10px] py-[3px] text-[10px] font-semibold text-white">
               {badge}
             </span>
-            <div className="mt-2 whitespace-pre-line text-[16px] font-bold leading-[1.3] text-white">
-              {title}
-            </div>
+            <div className="mt-1 text-[26px] font-extrabold leading-none text-white">{offer}</div>
+            <div className="mt-[2px] text-[13px] font-bold text-white">{title}</div>
+            <div className="mt-[2px] text-[11px] text-white/75">{subtitle}</div>
             <Link
               href={href}
-              className="mt-3 inline-flex items-center gap-[5px] rounded-[10px] bg-white px-[14px] py-2 text-[11px] font-bold text-blue-600"
+              className="mt-3 inline-flex items-center gap-[5px] rounded-[10px] bg-white px-[14px] py-[7px] text-[11px] font-bold text-gray-800"
             >
               {cta}
               <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="flex flex-shrink-0 items-center justify-center opacity-20">
-            <BannerIcon className="h-20 w-20 text-white" />
+          <div className="relative flex-shrink-0 opacity-20">
+            <BannerIcon className="h-16 w-16 text-white" />
           </div>
         </motion.div>
       </AnimatePresence>
@@ -295,8 +318,8 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
               href={`/sparepart/${sp.id}`}
               className="w-[150px] flex-shrink-0 rounded-2xl border border-gray-200 bg-white p-3"
             >
-              <div className="flex h-20 items-center justify-center rounded-[10px] bg-gray-100">
-                <Wrench className="h-9 w-9 text-gray-300" />
+              <div className="h-20 overflow-hidden rounded-[10px] bg-gray-100">
+                <SafeImage src={sp.foto} alt={sp.nama} className="h-full w-full object-cover" />
               </div>
               <div className="mt-[10px] flex items-center gap-[3px] text-[11px] font-semibold text-amber-500">
                 <Star className="h-[11px] w-[11px] fill-amber-500" />
