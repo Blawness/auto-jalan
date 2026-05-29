@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { SparepartCard } from '@/components/sparepart/SparepartCard'
 
 vi.mock('next/link', () => ({
@@ -50,6 +50,13 @@ describe('SparepartCard', () => {
     render(<SparepartCard {...defaultProps} stok={0} />)
     const link = screen.getByRole('link')
     expect(link).toHaveClass('opacity-60', 'pointer-events-none')
+  })
+
+  it('shows placeholder image on load error', () => {
+    render(<SparepartCard {...defaultProps} />)
+    const img = screen.getByRole('img')
+    fireEvent.error(img)
+    expect(img).toHaveAttribute('src', 'https://placehold.co/400x300/e2e8f0/64748b?text=No+Image')
   })
 
   it('does not have disabled classes when stok is positive', () => {

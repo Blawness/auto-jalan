@@ -34,6 +34,22 @@ describe('StarRating', () => {
     expect(onChange).toHaveBeenCalledWith(5)
   })
 
+  it('no stars filled when value is 0', () => {
+    render(<StarRating value={0} onChange={vi.fn()} />)
+    const buttons = screen.getAllByRole('button')
+    buttons.forEach((btn) => {
+      expect(btn.querySelector('svg')).not.toHaveClass('fill-yellow-400')
+    })
+  })
+
+  it('all stars filled when value exceeds max', () => {
+    render(<StarRating value={10} onChange={vi.fn()} max={5} />)
+    const buttons = screen.getAllByRole('button')
+    buttons.forEach((btn) => {
+      expect(btn.querySelector('svg')).toHaveClass('fill-yellow-400')
+    })
+  })
+
   it('stars up to value have filled class, stars above do not', () => {
     render(<StarRating value={3} onChange={vi.fn()} />)
     const buttons = screen.getAllByRole('button')

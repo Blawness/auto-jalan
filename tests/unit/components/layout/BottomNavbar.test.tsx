@@ -65,11 +65,25 @@ describe('BottomNavbar', () => {
     expect(riwayatLink).toHaveClass('bg-blue-50', 'text-blue-600')
   })
 
+  it('Riwayat link has active class on sub-path /riwayat/123', () => {
+    mockUsePathname.mockReturnValue('/riwayat/123')
+    render(<BottomNavbar />)
+    const riwayatLink = screen.getByRole('link', { name: /riwayat/i })
+    expect(riwayatLink).toHaveClass('bg-blue-50', 'text-blue-600')
+  })
+
   it('Akun link has active class when pathname is /akun', () => {
     mockUsePathname.mockReturnValue('/akun')
     render(<BottomNavbar />)
     const akunLink = screen.getByRole('link', { name: /akun/i })
     expect(akunLink).toHaveClass('bg-blue-50', 'text-blue-600')
+  })
+
+  it('Home link is NOT active on sub-path /lobby/something (exact match only)', () => {
+    mockUsePathname.mockReturnValue('/lobby/something')
+    render(<BottomNavbar />)
+    const homeLink = screen.getByRole('link', { name: /home/i })
+    expect(homeLink).not.toHaveClass('bg-blue-50')
   })
 
   it('unauthenticated user: Riwayat link redirects to /login with callbackUrl', () => {
