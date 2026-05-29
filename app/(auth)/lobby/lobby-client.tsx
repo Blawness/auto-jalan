@@ -7,8 +7,6 @@ import {
   Bell,
   MapPin,
   Car,
-  CarFront,
-  Bike,
   ChevronRight,
   Star,
   Wrench,
@@ -22,26 +20,7 @@ import {
 import { SafeImage } from "@/components/ui/safe-image"
 import { motion, AnimatePresence } from "framer-motion"
 import { formatRupiah } from "@/lib/utils"
-
-const brandIcons: Record<string, React.ElementType> = {
-  Honda: CarFront,
-  Toyota: Car,
-  Yamaha: Bike,
-  Suzuki: Bike,
-  Kawasaki: Bike,
-  Mitsubishi: CarFront,
-  Daihatsu: Car,
-  Nissan: Car,
-  Mazda: Car,
-  Hyundai: Car,
-  KIA: Car,
-  BMW: Car,
-  "Mercedes Benz": Car,
-  Wuling: Car,
-  Tesla: Car,
-  BYD: Car,
-  Chery: Car,
-}
+import { brandIconMap } from "@/lib/brand-icons"
 
 interface SparepartRow {
   id: string
@@ -279,25 +258,23 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
           </Link>
         </div>
         <div className="flex gap-[10px] overflow-x-auto scrollbar-hide px-4 pb-1">
-          {brands.slice(0, 8).map((brand) => {
-            const IconComponent = brandIcons[brand] || Car
-            const isActive = brand === "Honda"
+          {[...brands].sort((a, b) => {
+            const aHas = a in brandIconMap ? 0 : 1
+            const bHas = b in brandIconMap ? 0 : 1
+            return aHas - bHas
+          }).slice(0, 8).map((brand) => {
+            const BrandIcon = brandIconMap[brand]
             return (
               <Link
                 key={brand}
                 href={`/sparepart/list?merek=${encodeURIComponent(brand)}`}
                 className="flex flex-shrink-0 cursor-pointer flex-col items-center gap-[6px]"
               >
-                <div
-                  className={`flex h-[50px] w-[50px] items-center justify-center rounded-full border-[1.5px] ${
-                    isActive
-                      ? "border-blue-600 bg-blue-600"
-                      : "border-gray-200 bg-white"
-                  }`}
-                >
-                  <IconComponent
-                    className={`h-5 w-5 ${isActive ? "text-white" : "text-gray-500"}`}
-                  />
+                <div className="flex h-[50px] w-[50px] items-center justify-center rounded-full border-[1.5px] border-gray-200 bg-white">
+                  {BrandIcon
+                    ? <BrandIcon size={28} />
+                    : <Car className="h-5 w-5 text-gray-400" />
+                  }
                 </div>
                 <span className="text-[11px] font-medium text-gray-500">{brand}</span>
               </Link>
