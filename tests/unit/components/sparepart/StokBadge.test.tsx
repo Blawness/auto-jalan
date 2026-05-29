@@ -31,8 +31,10 @@ describe('StokBadge', () => {
     expect(badge).toHaveClass('text-green-600')
   })
 
-  it('shows "Tersedia" when stok is 100', () => {
+  it('shows "Tersedia" with green styling when stok is 100', () => {
     render(<StokBadge stok={100} />)
-    expect(screen.getByText('Tersedia')).toBeInTheDocument()
+    const badge = screen.getByText('Tersedia')
+    expect(badge).toBeInTheDocument()
+    expect(badge).toHaveClass('text-green-600')
   })
 })
