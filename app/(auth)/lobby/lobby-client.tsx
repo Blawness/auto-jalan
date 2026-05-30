@@ -276,7 +276,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
               >
                 <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[1.5px] border-gray-200 bg-white overflow-hidden">
                   {BrandIcon
-                    ? <BrandIcon size={72} />
+                    ? <BrandIcon size={90} />
                     : <span className="text-sm font-bold text-gray-500">
                         {brand.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                       </span>
