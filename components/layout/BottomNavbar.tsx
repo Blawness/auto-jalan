@@ -28,14 +28,14 @@ export function BottomNavbar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md border-t bg-white">
-      <div className="flex h-[62px] items-center justify-around px-1">
+      <div className="flex h-[62px] items-center justify-evenly px-1">
         {navItems.slice(0, 2).map(({ href, label, icon: Icon, guestBlocked }) => {
           const active = pathname === href || (href !== "/lobby" && pathname.startsWith(href + "/"))
           return (
             <Link
               key={href}
               href={navHref(href, guestBlocked)}
-              className={`flex flex-col items-center gap-[3px] rounded-xl px-[14px] py-[6px] text-[10px] font-semibold ${
+              className={`flex flex-col items-center gap-[3px] rounded-xl px-[10px] py-[6px] text-[10px] font-semibold ${
                 active ? "bg-blue-50 text-blue-600" : "text-gray-500"
               }`}
             >
@@ -55,9 +55,9 @@ export function BottomNavbar() {
         <Link
           href="/sos"
           aria-label="Darurat SOS"
-          className="-mt-[26px] flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-full border-[3px] border-[#f4f6f9] bg-red-500"
+          className="-mt-[20px] flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-full border-[3px] border-[#f4f6f9] bg-red-500"
         >
-          <Siren className="h-[22px] w-[22px] text-white" />
+          <Siren className="h-[18px] w-[18px] text-white" />
         </Link>
 
         {navItems.slice(2).map(({ href, label, icon: Icon, guestBlocked }) => {
@@ -66,7 +66,7 @@ export function BottomNavbar() {
             <Link
               key={href}
               href={navHref(href, guestBlocked)}
-              className={`flex flex-col items-center gap-[3px] rounded-xl px-[14px] py-[6px] text-[10px] font-semibold ${
+              className={`flex flex-col items-center gap-[3px] rounded-xl px-[10px] py-[6px] text-[10px] font-semibold ${
                 active ? "bg-blue-50 text-blue-600" : "text-gray-500"
               }`}
             >
