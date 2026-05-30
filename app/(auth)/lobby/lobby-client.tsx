@@ -274,9 +274,9 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
                 href={`/sparepart/list?merek=${encodeURIComponent(brand)}`}
                 className="flex flex-shrink-0 cursor-pointer flex-col items-center gap-[4px]"
               >
-                <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[1.5px] border-gray-200 bg-white">
+                <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full border-[1.5px] border-gray-200 bg-white">
                   {BrandIcon
-                    ? <div className="flex h-full w-full items-center justify-center [&_svg]:h-full [&_svg]:w-full [&_svg]:max-w-none">
+                    ? <div className="flex h-full w-full items-center justify-center [&_svg]:h-full [&_svg]:w-full [&_svg]:max-w-none [&_svg]:scale-[0.98]">
                         <BrandIcon size={72} />
                       </div>
                     : <span className="text-sm font-bold text-gray-500">
