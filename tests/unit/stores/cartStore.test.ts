@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useCartStore } from '@/stores/cartStore'
 
 describe('cartStore', () => {
@@ -77,5 +77,33 @@ describe('cartStore', () => {
     useCartStore.getState().clear()
     const { items } = useCartStore.getState()
     expect(items).toHaveLength(0)
+  })
+
+  it('cart store uses persist middleware', () => {
+    // @ts-expect-error persist is available on persisted stores
+    expect(useCartStore.persist).toBeDefined()
+  })
+
+  it('cart store uses persist middleware with correct storage key', () => {
+    expect(useCartStore.persist).toBeDefined()
+    expect(useCartStore.persist.getOptions().name).toBe('cart-storage')
+  })
+
+  it('persist rehydrates from localStorage when store re-created', async () => {
+    localStorage.setItem('cart-storage', JSON.stringify({
+      state: { items: [{ sparepartId: 'sp1', qty: 2 }] },
+      version: 0,
+    }))
+    const mod = await import('@/stores/cartStore')
+    mod.useCartStore.persist.rehydrate()
+    const { items } = mod.useCartStore.getState()
+    expect(items).toEqual([{ sparepartId: 'sp1', qty: 2 }])
+  })
+
+  it('empty localStorage results in empty cart', () => {
+    localStorage.removeItem('cart-storage')
+    useCartStore.persist.rehydrate()
+    const { items } = useCartStore.getState()
+    expect(items).toEqual([])
   })
 })

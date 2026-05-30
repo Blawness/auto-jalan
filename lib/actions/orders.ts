@@ -5,6 +5,7 @@ import { orders, orderItems, spareparts } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { v4 as uuid } from "uuid"
+import { rateLimitByUser } from "@/lib/rate-limit"
 
 export async function createOrder(data: {
   mekanikId: string
@@ -12,13 +13,20 @@ export async function createOrder(data: {
   sparepartItems: { sparepartId: string; qty: number }[]
   biayaKedatangan: number
 }) {
+  const rateError = await rateLimitByUser(10)
+  if (rateError) return { error: rateError }
+
   const session = await auth()
   if (!session?.user?.id) return { error: "Unauthorized" }
 
   if (!data.mekanikId?.trim()) return { error: "Pilih mekanik" }
+  if (!/^[a-z0-9-]+$/i.test(data.mekanikId.trim())) return { error: "ID mekanik tidak valid" }
   if (!data.serviceId?.trim()) return { error: "Pilih layanan" }
+  if (!/^[a-z0-9-]+$/i.test(data.serviceId.trim())) return { error: "ID layanan tidak valid" }
   if (typeof data.biayaKedatangan !== "number" || data.biayaKedatangan < 0) return { error: "Biaya kedatangan tidak valid" }
+  if (data.biayaKedatangan > 1000000) return { error: "Biaya kedatangan terlalu besar" }
   if (!Array.isArray(data.sparepartItems) || data.sparepartItems.length === 0) return { error: "Pilih minimal satu sparepart" }
+  if (data.sparepartItems.length > 50) return { error: "Maksimal 50 sparepart per pesanan" }
 
   let sparepartTotal = 0
   for (const item of data.sparepartItems) {
@@ -64,5 +72,11 @@ export async function createOrder(data: {
 }
 
 export async function completeOrder(orderId: string) {
+  const rateError = await rateLimitByUser(20)
+  if (rateError) return { error: rateError }
+
+  if (!orderId?.trim()) return { error: "ID pesanan tidak valid" }
+  if (!/^[a-z0-9-]+$/i.test(orderId.trim())) return { error: "ID pesanan tidak valid" }
+
   await db.update(orders).set({ status: "selesai" }).where(eq(orders.id, orderId))
 }

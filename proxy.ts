@@ -9,6 +9,7 @@ const browseRoutes = [
   "/montir",
   "/bengkel",
   "/forum",
+  "/about",
 ]
 
 function isBrowseRoute(pathname: string): boolean {
