@@ -52,7 +52,7 @@ export default async function SparepartDetailPage({ params }: Props) {
           </p>
         </div>
 
-        <AddToCartButton partId={part.id} />
+        <AddToCartButton partId={part.id} stok={part.stok} />
 
         {/* Ulasan Pembeli */}
         <div className="space-y-3 rounded-xl border bg-white p-4">
