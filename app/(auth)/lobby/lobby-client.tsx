@@ -21,6 +21,7 @@ import { SafeImage } from "@/components/ui/safe-image"
 import { motion, AnimatePresence } from "framer-motion"
 import { formatRupiah } from "@/lib/utils"
 import { brandIconMap } from "@/lib/brand-icons"
+import { sparepartImage } from "@/lib/sparepart-image"
 
 interface SparepartRow {
   id: string
@@ -304,7 +305,7 @@ export function LobbyClient({ isGuest = false, userName, initial, brands, sparep
               className="w-[150px] flex-shrink-0 rounded-2xl border border-gray-200 bg-white p-3"
             >
               <div className="h-20 overflow-hidden rounded-[10px] bg-gray-100">
-                <SafeImage src={sp.foto} alt={sp.nama} className="h-full w-full object-cover" />
+                <SafeImage src={sp.foto?.startsWith("http") ? sp.foto : sparepartImage(sp.nama, sp.id)} alt={sp.nama} className="h-full w-full object-cover" />
               </div>
               <div className="mt-[10px] flex items-center gap-[3px] text-[11px] font-semibold text-amber-700">
                 <Star className="h-[11px] w-[11px] fill-amber-500" />

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { useSearchParams } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { EscrowBanner } from "@/components/pemesanan/EscrowBanner"
-import { SliderButton } from "@/components/pemesanan/SliderButton"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,7 +15,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { formatRupiah } from "@/lib/utils"
-import { Star, Car, Award, AlertTriangle } from "lucide-react"
+import { Star, Car, Award, AlertTriangle, CheckCircle2 } from "lucide-react"
 
 function OngoingPageInner() {
   const router = useRouter()
@@ -85,7 +84,13 @@ function OngoingPageInner() {
           </div>
         </div>
 
-        <SliderButton onComplete={() => setShowKonfirmasi(true)} />
+        <Button
+          className="h-14 w-full bg-green-500 text-base font-semibold hover:bg-green-600"
+          onClick={() => setShowKonfirmasi(true)}
+        >
+          <CheckCircle2 className="mr-2 h-5 w-5" />
+          Selesaikan Pesanan
+        </Button>
 
         <Button
           variant="outline"

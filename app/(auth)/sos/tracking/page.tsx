@@ -3,10 +3,10 @@
 import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
-import { useUiStore } from "@/stores/uiStore"
 import { useSimulateTracking } from "@/hooks/useSimulateTracking"
 import { MekanikFloatingCard } from "@/components/tracking/MekanikFloatingCard"
 import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 
 const TrackingMap = dynamic(
@@ -30,7 +30,14 @@ export default function SOSTrackingPage() {
 
   return (
     <div className="relative">
-      <div className="absolute left-0 right-0 top-0 z-30 border-b bg-white/90 p-3 backdrop-blur-sm">
+      <div className="absolute left-0 right-0 top-0 z-30 flex items-center gap-2 border-b bg-white/90 p-3 backdrop-blur-sm">
+        <button
+          onClick={() => router.push("/lobby")}
+          aria-label="Kembali"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-700 active:scale-95"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
         <h2 className="text-sm font-semibold">Live Tracking</h2>
       </div>
 

@@ -127,6 +127,7 @@ export const orders = pgTable("orders", {
     .references(() => users.id),
   mekanikId: text("mekanik_id").references(() => mekaniks.id),
   serviceId: text("service_id").references(() => services.id),
+  vehicleId: text("vehicle_id").references(() => vehicles.id),
   status: orderStatusEnum("status").notNull().default("ongoing"),
   totalHarga: integer("total_harga").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -203,6 +204,10 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   service: one(services, {
     fields: [orders.serviceId],
     references: [services.id],
+  }),
+  vehicle: one(vehicles, {
+    fields: [orders.vehicleId],
+    references: [vehicles.id],
   }),
   orderItems: many(orderItems),
 }))

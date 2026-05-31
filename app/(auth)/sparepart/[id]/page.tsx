@@ -7,6 +7,7 @@ import { SafeImage } from "@/components/ui/safe-image"
 import { KeaslianBadge } from "@/components/sparepart/KeaslianBadge"
 import { StokBadge } from "@/components/sparepart/StokBadge"
 import { formatRupiah } from "@/lib/utils"
+import { sparepartImage } from "@/lib/sparepart-image"
 import { AddToCartButton } from "./AddToCartButton"
 import { Star } from "lucide-react"
 
@@ -22,7 +23,7 @@ export default async function SparepartDetailPage({ params }: Props) {
       <TopBar title="Detail Sparepart" />
       <div className="space-y-4 p-4">
         <div className="flex h-56 items-center justify-center overflow-hidden rounded-xl bg-gray-100">
-          <SafeImage src={part.foto} alt={part.nama} className="h-full w-full object-cover" />
+          <SafeImage src={part.foto?.startsWith("http") ? part.foto : sparepartImage(part.nama, part.id)} alt={part.nama} className="h-full w-full object-cover" />
         </div>
         <div className="flex items-start justify-between">
           <div><h2 className="text-lg font-bold">{part.nama}</h2><p className="mt-1 text-xl font-bold text-blue-600">{formatRupiah(part.harga)}</p></div>

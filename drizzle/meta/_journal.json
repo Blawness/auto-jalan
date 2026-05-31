@@ -8,6 +8,13 @@
       "when": 1779989551222,
       "tag": "0000_mysterious_spencer_smythe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780246987917,
+      "tag": "0001_right_betty_ross",
+      "breakpoints": true
     }
   ]
 }

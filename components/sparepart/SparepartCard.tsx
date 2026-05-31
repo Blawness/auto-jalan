@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { formatRupiah } from "@/lib/utils"
+import { sparepartImage } from "@/lib/sparepart-image"
 import { KeaslianBadge } from "./KeaslianBadge"
 import { StokBadge } from "./StokBadge"
 
@@ -24,7 +25,7 @@ export function SparepartCard({ id, nama, harga, foto, keaslian, stok }: Props) 
     >
       <div className="relative h-32 bg-gray-100">
         <img
-          src={foto}
+          src={foto?.startsWith("http") ? foto : sparepartImage(nama, id)}
           alt={nama}
           className="h-full w-full object-cover"
           onError={(e) => {
